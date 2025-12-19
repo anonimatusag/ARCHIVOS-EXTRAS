@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Crusaders: Galaxia en Guerra</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: sans-serif;
+            color: #fff;
+        }
+
+        #gameCanvas {
+            background-color: #000;
+            border: 2px solid #fff;
+        }
+
+        #dialogueBox {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border: 1px solid #fff;
+            border-radius: 5px;
+            display: none; /* Oculto por defecto */
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <div id="dialogueBox"></div>
+
+    <script>
+        // --- Configuración del juego ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const GAME_WIDTH = 480;
+        const GAME_HEIGHT = 640;
+        canvas.width = GAME_WIDTH;
+        canvas.height = GAME_HEIGHT;
+
+        // --- Elementos del juego ---
+        const player = {
+            x: GAME_WIDTH / 2 - 16,
+            y: GAME_HEIGHT - 64,
+            width: 32,
+            height: 32,
+            speed: 5,
+            color: 'blue'
+        };
+
+        const enemies = [];
+        const projectiles = [];
+        let dialogueIndex = 0;
+
+        // --- Diálogos de la Federación Galáctica ---
+        const dialogues = [
+            "Federación Galáctica: ¡Soldado, desciende y lucha!",
+            "Supersoldado: ¡Entendido, limpiaré este sector!",
+            "Alien: ¡Intrusos detectados! ¡Ataquen!",
+            "Supersoldado: ¡Recibí daño! Necesito refuerzos.",
+            "Federación Galáctica: ¡Resiste, soldado! La galaxia cuenta contigo."
+        ];
+
+        // --- Funciones de dibujo ---
+        function drawPlayer() {
+            ctx.fillStyle = player.color;
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+        }
+
+        function drawEnemies() {
+            enemies.forEach(enemy => {
+                ctx.fillStyle = enemy.color;
+                ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+            });
+        }
+
+        function drawProjectiles() {
+            projectiles.forEach(projectile => {
+                ctx.fillStyle = projectile.color;
+                ctx.fillRect(projectile.x, projectile.y, projectile.width, projectile.height);
+            });
+        }
+
+        function showDialogue() {
+            const dialogueBox = document.getElementById('dialogueBox');
+            dialogueBox.textContent = dialogues[dialogueIndex];
+            dialogueBox.style.display = 'block';
+            setTimeout(() => {
+                dialogueBox.style.display = 'none';
+                dialogueIndex = (dialogueIndex + 1) % dialogues.length; // Ciclar los diálogos
+            }, 3000); // Mostrar cada diálogo por 3 segundos
+        }
+
+        // --- Funciones de movimiento y lógica ---
+        function updatePlayer() {
+            if (keys['ArrowLeft'] && player.x > 0) player.x -= player.speed;
+            if (keys['ArrowRight'] && player.x < GAME_WIDTH - player.width) player.x += player.speed;
+        }
+
+        function updateEnemies() {
+            if (Math.random() < 0.01) { // Probabilidad de generar un enemigo
+                enemies.push({
+                    x: Math.random() * (GAME_WIDTH - 32),
+                    y: 0,
+                    width: 32,
+                    height: 32,
+                    speed: 2,
+                    color: 'red'
+                });
+            }
+            enemies.forEach(enemy => enemy.y += enemy.speed);
+            // Eliminar enemigos fuera de la pantalla
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                if (enemies[i].y > GAME_HEIGHT) {
+                    enemies.splice(i, 1);
+                }
+            }
+        }
+
+         function updateProjectiles() {
+            projectiles.forEach(projectile => projectile.y -= projectile.speed);
+            // Eliminar proyectiles fuera de la pantalla
+            for (let i = projectiles.length - 1; i >= 0; i--) {
+                if (projectiles[i].y < 0) {
+                    projectiles.splice(i, 1);
+                }
+            }
+        }
+
+        function checkCollisions() {
+            // Colisión proyectil-enemigo
+            for (let i = projectiles.length - 1; i >= 0; i--) {
+                for (let j = enemies.length - 1; j >= 0; j--) {
+                    if (projectiles[i].x < enemies[j].x + enemies[j].width &&
+                        projectiles[i].x + projectiles[i].width > enemies[j].x &&
+                        projectiles[i].y < enemies[j].y + enemies[j].height &&
+                        projectiles[i].y + projectiles[i].height > enemies[j].y) {
+                        enemies.splice(j, 1);
+                        projectiles.splice(i, 1);
+                        break;
+                    }
+                }
+            }
+
+            // Colisión jugador-enemigo (simple game over)
+            for (let i = 0; i < enemies.length; i++) {
+                if (player.x < enemies[i].x + enemies[i].width &&
+                    player.x + player.width > enemies[i].x &&
+                    player.y < enemies[i].y + enemies[i].height &&
+                    player.y + player.height > enemies[i].y) {
+                    alert("¡Game Over!");
+                    enemies.length = 0; // Reiniciar enemigos
+                    projectiles.length = 0; // Reiniciar proyectiles
+                    break;
+                }
+            }
+        }
+
+        // --- Manejo de entrada ---
+        const keys = {};
+        document.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            if (e.key === ' ') { // Disparar con la barra espaciadora
+                projectiles.push({
+                    x: player.x + player.width / 2 - 2,
+                    y: player.y,
+                    width: 4,
+                    height: 10,
+                    speed: 10,
+                    color: 'white'
+                });
+            }
+            if (e.key === 'd') { // Mostrar diálogo con la tecla 'd'
+                showDialogue();
+            }
+        });
+        document.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+
+        // --- Bucle del juego ---
+        function gameLoop() {
+            ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+
+            updatePlayer();
+            updateEnemies();
+            updateProjectiles();
+            checkCollisions();
+
+            drawPlayer();
+            drawEnemies();
+            drawProjectiles();
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // --- Iniciar el juego ---
+        gameLoop();
+    </script>
+</body>
+</html>
