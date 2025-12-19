@@ -1,0 +1,2249 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcade Clásico: La Experiencia Definitiva</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Base Styles & Global Effects --- */
+        :root {
+            --bg-color: #1a1a2e; /* Dark Blue-Purple */
+            --text-color: #e0e0e0;
+            --accent-color-1: #0f4c75; /* Steel Blue */
+            --accent-color-2: #3282b8; /* Lighter Blue */
+            --button-bg: #bb2e70; /* Magenta */
+            --button-hover-bg: #8e1f57;
+            --header-color: #ffcc00; /* Gold */
+            --font-pixel: 'Press Start 2P', cursive;
+            --font-futuristic: 'Orbitron', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-futuristic);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: linear-gradient(135deg, var(--bg-color), #0a0a1a); /* Gradient background */
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            overflow-x: hidden; /* Prevent horizontal scroll for animations */
+            position: relative; /* For particle effect */
+        }
+
+        /* Particle effect */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><rect width="1" height="1" x="0" y="0" fill="%232e2e4e" /></svg>') repeat;
+            opacity: 0.3;
+            animation: flicker 1s infinite alternate;
+            pointer-events: none; /* Allow clicks through */
+            z-index: -1;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.3; }
+            100% { opacity: 0.4; }
+        }
+
+        h1 {
+            font-family: var(--font-pixel);
+            color: var(--header-color);
+            margin-bottom: 40px;
+            font-size: 3em;
+            text-shadow: 4px 4px 0px rgba(0,0,0,0.5);
+            letter-spacing: 5px;
+            animation: glow 1.5s infinite alternate;
+            user-select: none;
+        }
+
+        @keyframes glow {
+            0% { text-shadow: 4px 4px 0px rgba(0,0,0,0.5), 0 0 10px var(--header-color); }
+            100% { text-shadow: 4px 4px 0px rgba(0,0,0,0.5), 0 0 20px var(--header-color), 0 0 30px var(--header-color); }
+        }
+
+        .game-menu {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 60px;
+            gap: 20px;
+        }
+
+        .game-menu button {
+            background-color: var(--button-bg);
+            color: white;
+            border: 3px solid var(--accent-color-2);
+            padding: 18px 30px;
+            cursor: pointer;
+            font-size: 1.3em;
+            font-family: var(--font-pixel);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .game-menu button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.2); /* Shine effect */
+            transform: skewX(-20deg);
+            transition: all 0.5s ease;
+            z-index: -1;
+        }
+
+        .game-menu button:hover::before {
+            left: 100%;
+        }
+
+        .game-menu button:hover {
+            background-color: var(--button-hover-bg);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.6);
+        }
+
+        #game-container {
+            background-color: var(--accent-color-1);
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            padding: 40px;
+            text-align: center;
+            width: 95%;
+            max-width: 900px;
+            min-height: 450px;
+            display: none; /* Oculto por defecto */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            border: 5px solid var(--accent-color-2);
+            position: relative;
+            animation: fadeIn 1s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #game-title {
+            color: var(--header-color);
+            font-size: 2.5em;
+            margin-bottom: 25px;
+            font-family: var(--font-pixel);
+            text-shadow: 3px 3px 0px rgba(0,0,0,0.4);
+            letter-spacing: 2px;
+        }
+
+        #game-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            gap: 20px;
+            color: var(--text-color);
+        }
+
+        #game-message {
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            color: #a0a0a0;
+            font-weight: bold;
+            text-shadow: 1px 1px 0px rgba(0,0,0,0.2);
+        }
+
+        .reset-button, .back-to-menu-button {
+            background-color: #ff4757; /* Reddish */
+            color: white;
+            border: 2px solid #e01e37;
+            padding: 12px 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            margin-top: 25px;
+            font-family: var(--font-futuristic);
+            text-transform: uppercase;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .reset-button:hover, .back-to-menu-button:hover {
+            background-color: #e01e37;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+
+        /* --- Input & Button styles (global for game interactions) --- */
+        input[type="text"], input[type="number"], .game-input {
+            padding: 12px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            border: 2px solid var(--accent-color-2);
+            background-color: #2a303e;
+            color: var(--text-color);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);
+            transition: border-color 0.3s ease;
+            outline: none;
+        }
+        input[type="text"]:focus, input[type="number"]:focus, .game-input:focus {
+            border-color: var(--header-color);
+        }
+
+        .game-button {
+            padding: 12px 25px;
+            background-color: #4CAF50; /* Green */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-family: var(--font-futuristic);
+            text-transform: uppercase;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .game-button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+        .game-button:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        /* --- Estilos específicos de Tic-Tac-Toe (mantener base) --- */
+        #tic-tac-toe-board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 5px;
+            background-color: #555;
+            border-radius: 5px;
+            padding: 5px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5) inset;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 4em;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: #444;
+            border-radius: 5px;
+            transition: background-color 0.2s ease;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .cell:hover {
+            background-color: #666;
+        }
+        .X { color: #ff6b6b; } /* Rojo más vibrante */
+        .O { color: #6a89cc; } /* Azul más vibrante */
+
+        /* --- Estilos específicos de Solitario (mantener base) --- */
+        #solitario-game {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+        }
+        .solitario-cards {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .solitario-card {
+            width: 90px;
+            height: 130px;
+            background-color: #f0f0f0;
+            border: 3px solid #555;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.6em;
+            font-weight: bold;
+            color: #333;
+            box-shadow: 3px 3px 8px rgba(0,0,0,0.4);
+            transition: transform 0.2s ease;
+            user-select: none;
+            cursor: pointer;
+        }
+        .solitario-card.hidden {
+            background-color: #333;
+            color: transparent;
+            background-image: linear-gradient(45deg, #0f4c75 25%, #bb2e70 25%, #bb2e70 50%, #0f4c75 50%, #0f4c75 75%, #bb2e70 75%, #bb2e70 100%);
+            background-size: 20px 20px;
+            border-color: #888;
+        }
+        .solitario-card.hidden:hover {
+            transform: translateY(-5px) scale(1.03);
+        }
+        .solitario-palo {
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+        #solitario-player-input, #solitario-player-hand {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* --- Estilos específicos de Tetris (mantener base) --- */
+        #tetris-game {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        #tetris-canvas {
+            background-color: #000;
+            border: 3px solid var(--accent-color-2);
+            box-shadow: 0 0 20px rgba(0,255,255,0.5); /* Neon effect */
+            border-radius: 5px;
+        }
+        .tetris-cell {
+            width: 25px; /* Tamaño de cada bloque */
+            height: 25px;
+            background-color: #333;
+            border: 1px solid #222;
+            box-sizing: border-box;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+        }
+        /* Colores de las piezas de Tetris (ejemplos mejorados) */
+        .I { background-color: #00FFFF; border-color: #00BFFF; } /* Cyan */
+        .J { background-color: #0000FF; border-color: #0000CD; } /* Blue */
+        .L { background-color: #FFA500; border-color: #FF8C00; } /* Orange */
+        .O { background-color: #FFFF00; border-color: #DAA520; } /* Yellow */
+        .S { background-color: #00FF00; border-color: #00CD00; } /* Green */
+        .T { background-color: #800080; border-color: #6A0DAD; } /* Purple */
+        .Z { background-color: #FF0000; border-color: #CD0000; } /* Red */
+        #tetris-info {
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background-color: #2a303e;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid var(--accent-color-2);
+            box-shadow: 0 0 10px rgba(0,255,255,0.3);
+        }
+        #tetris-info p {
+            margin: 0;
+            font-size: 1.1em;
+            color: var(--text-color);
+        }
+        #tetris-next-piece-canvas {
+            background-color: #1a1a2e;
+            border: 1px solid #444;
+            border-radius: 5px;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+        }
+
+
+        /* --- Estilos específicos de Juego de Memoria (mantener base) --- */
+        #memory-grid {
+            display: grid;
+            gap: 15px;
+            margin-top: 20px;
+            width: 100%;
+            justify-content: center;
+        }
+        .memory-card {
+            width: 100px;
+            height: 100px;
+            background-color: #4b4b4b; /* Fondo oscuro */
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3em;
+            color: transparent; /* Oculto por defecto */
+            user-select: none;
+            transition: all 0.4s ease;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+            border: 2px solid #555;
+        }
+        .memory-card.flipped {
+            background-color: #f0f0f0; /* Fondo claro al voltear */
+            color: #333;
+            transform: scale(1.05) rotateY(180deg); /* Efecto 3D al voltear */
+            box-shadow: 0 8px 15px rgba(0,0,0,0.4);
+        }
+        .memory-card.matched {
+            background-color: #76ff03; /* Verde brillante */
+            cursor: default;
+            opacity: 0.9;
+            transform: scale(0.95);
+            border-color: #4caf50;
+            animation: pulse 1s infinite alternate;
+        }
+        @keyframes pulse {
+            from { transform: scale(0.95); opacity: 0.9; }
+            to { transform: scale(1.0); opacity: 1; }
+        }
+
+        /* --- Estilos específicos de Ahorcado (mantener base) --- */
+        #hangman-display {
+            font-family: var(--font-pixel);
+            font-size: 3.5em;
+            letter-spacing: 10px;
+            margin-bottom: 25px;
+            color: var(--header-color);
+            text-shadow: 3px 3px 0px rgba(0,0,0,0.3);
+            word-break: break-all; /* Para palabras largas */
+            line-height: 1.2;
+        }
+        #hangman-guessed-letters {
+            font-size: 1.3em;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+        #hangman-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        #hangman-input input {
+            width: 80px;
+            text-align: center;
+            text-transform: uppercase;
+            font-family: var(--font-pixel);
+            font-size: 1.5em;
+        }
+        #hangman-attempts {
+            font-size: 1.2em;
+            color: #ff6b6b; /* Rojo claro */
+            font-weight: bold;
+        }
+        #hangman-figure {
+            margin-top: 20px;
+            font-family: monospace;
+            white-space: pre;
+            font-size: 1.3em;
+            color: #e0e0e0;
+            background-color: #2a303e;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #555;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        /* --- Estilos específicos de Pong (mantener base) --- */
+        #pong-canvas {
+            background-color: #000;
+            border: 3px solid var(--header-color);
+            box-shadow: 0 0 25px rgba(255,204,0,0.7); /* Neon effect */
+            margin-top: 25px;
+            border-radius: 5px;
+        }
+        #pong-game p {
+            font-size: 1.5em;
+            font-family: var(--font-pixel);
+            color: var(--text-color);
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.3);
+        }
+
+        /* --- Estilos específicos de Juego de Adivinanzas (MODOS y PREGUNTAS) --- */
+        #guessing-modes {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        #guessing-modes button {
+            background-color: var(--accent-color-2);
+            border: 2px solid var(--header-color);
+            padding: 15px 25px;
+            font-size: 1.2em;
+            font-family: var(--font-pixel);
+            border-radius: 8px;
+            cursor: pointer;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        #guessing-modes button:hover {
+            background-color: var(--header-color);
+            color: var(--bg-color);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+
+        #quiz-question {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: var(--header-color);
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.3);
+            line-height: 1.4;
+        }
+        #quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 80%;
+            max-width: 600px;
+        }
+        .quiz-option-button {
+            background-color: #4CAF50; /* Green */
+            color: white;
+            border: 2px solid #388e3c;
+            padding: 15px 20px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+            font-family: var(--font-futuristic);
+        }
+        .quiz-option-button:hover {
+            background-color: #388e3c;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+        }
+        .quiz-option-button.correct {
+            background-color: #28a745; /* Darker Green */
+            border-color: #1e7e34;
+            animation: pulseGreen 1s forwards;
+        }
+        .quiz-option-button.incorrect {
+            background-color: #dc3545; /* Darker Red */
+            border-color: #c82333;
+            animation: shake 0.5s;
+        }
+        .quiz-option-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        @keyframes pulseGreen {
+            0% { transform: scale(1); box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+            50% { transform: scale(1.05); box-shadow: 0 0 20px #28a745; }
+            100% { transform: scale(1); box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+        }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
+        #quiz-feedback {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-top: 20px;
+            color: var(--header-color);
+        }
+        #quiz-score {
+            font-size: 1.5em;
+            margin-top: 15px;
+            color: #76ff03; /* Bright Green */
+            font-family: var(--font-pixel);
+        }
+        #quiz-progress {
+            margin-top: 10px;
+            font-size: 1em;
+            color: #ccc;
+        }
+        #next-question-button {
+            margin-top: 20px;
+            background-color: #007bff;
+            border: 2px solid #0056b3;
+            padding: 12px 25px;
+            font-size: 1.1em;
+            font-family: var(--font-futuristic);
+            border-radius: 8px;
+            cursor: pointer;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            display: none; /* Oculto por defecto */
+        }
+        #next-question-button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        /* --- Responsiveness --- */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2em;
+                letter-spacing: 3px;
+            }
+            .game-menu button {
+                padding: 12px 20px;
+                font-size: 1em;
+            }
+            #game-container {
+                padding: 25px;
+            }
+            #game-title {
+                font-size: 2em;
+            }
+            .cell {
+                width: 80px;
+                height: 80px;
+                font-size: 3em;
+            }
+            #tic-tac-toe-board {
+                grid-template-columns: repeat(3, 80px);
+                grid-template-rows: repeat(3, 80px);
+                width: 255px; /* 3*80 + 2*5 */
+                height: 255px;
+            }
+            .solitario-card {
+                width: 70px;
+                height: 100px;
+                font-size: 1.2em;
+            }
+            .tetris-cell {
+                width: 20px;
+                height: 20px;
+            }
+            #tetris-canvas {
+                width: 200px; /* 10 * 20px */
+                height: 400px; /* 20 * 20px */
+            }
+            .memory-card {
+                width: 80px;
+                height: 80px;
+                font-size: 2em;
+            }
+            #hangman-display {
+                font-size: 2.5em;
+                letter-spacing: 5px;
+            }
+            #pong-canvas {
+                width: 400px;
+                height: 250px;
+            }
+            #quiz-question {
+                font-size: 1.5em;
+            }
+            .quiz-option-button {
+                font-size: 1em;
+                padding: 12px 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8em;
+                letter-spacing: 2px;
+                text-align: center;
+            }
+            .game-menu {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .game-menu button {
+                width: 80%;
+                font-size: 1em;
+                padding: 15px;
+            }
+            #game-container {
+                padding: 15px;
+            }
+            #game-title {
+                font-size: 1.8em;
+            }
+            .cell {
+                width: 70px;
+                height: 70px;
+                font-size: 2.5em;
+            }
+            #tic-tac-toe-board {
+                grid-template-columns: repeat(3, 70px);
+                grid-template-rows: repeat(3, 70px);
+                width: 225px; /* 3*70 + 2*5 */
+                height: 225px;
+            }
+            .solitario-card {
+                width: 60px;
+                height: 90px;
+                font-size: 1em;
+            }
+            #tetris-game {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+            #tetris-canvas {
+                width: 150px; /* 10 * 15px */
+                height: 300px; /* 20 * 15px */
+            }
+            .tetris-cell {
+                width: 15px;
+                height: 15px;
+            }
+            .memory-card {
+                width: 70px;
+                height: 70px;
+                font-size: 1.8em;
+            }
+            #hangman-display {
+                font-size: 2em;
+                letter-spacing: 3px;
+            }
+            #hangman-input input {
+                width: 50px;
+                font-size: 1.2em;
+            }
+            #pong-canvas {
+                width: 300px;
+                height: 200px;
+            }
+            #quiz-question {
+                font-size: 1.2em;
+            }
+            .quiz-option-button {
+                font-size: 0.9em;
+                padding: 10px 12px;
+            }
+            #guessing-modes button {
+                width: 100%;
+                font-size: 1em;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1><span style="color: #ff4757;">A</span>RCADE <span style="color: #6a89cc;">C</span>LÁSICO</h1>
+
+    <div class="game-menu">
+        <button onclick="loadGame('tic-tac-toe')">Tic-Tac-Toe</button>
+        <button onclick="loadGame('solitario')">Solitario</button>
+        <button onclick="loadGame('tetris')">Tetris</button>
+        <button onclick="loadGame('memory')">Memoria</button>
+        <button onclick="loadGame('hangman')">Ahorcado</button>
+        <button onclick="loadGame('pong')">Pong</button>
+        <button onclick="loadGame('guessing')">Adivinanzas</button>
+    </div>
+
+    <div id="game-container">
+        <h2 id="game-title"></h2>
+        <div id="game-content">
+            </div>
+        <p id="game-message"></p>
+        <button id="reset-button" class="reset-button" style="display:none;" onclick="resetCurrentGame()">Reiniciar Juego</button>
+        <button id="back-to-menu-button" class="back-to-menu-button" style="display:none;" onclick="backToMainMenu()">Volver al Menú</button>
+    </div>
+
+    <script>
+        const gameContainer = document.getElementById('game-container');
+        const gameTitle = document.getElementById('game-title');
+        const gameContent = document.getElementById('game-content');
+        const gameMessage = document.getElementById('game-message');
+        const resetButton = document.getElementById('reset-button');
+        const backToMenuButton = document.getElementById('back-to-menu-button');
+
+        let currentGame = null;
+
+        function loadGame(gameName) {
+            gameContainer.style.display = 'flex';
+            gameContent.innerHTML = '';
+            gameMessage.textContent = '';
+            resetButton.style.display = 'none';
+            backToMenuButton.style.display = 'block'; // Always show 'back to menu' when in a game
+
+            // Detener cualquier animación o intervalo de juego anterior
+            if (currentGame && typeof currentGame.cleanup === 'function') {
+                currentGame.cleanup();
+            }
+
+            switch (gameName) {
+                case 'tic-tac-toe':
+                    gameTitle.textContent = 'Tic-Tac-Toe';
+                    createTicTacToeGame();
+                    break;
+                case 'solitario':
+                    gameTitle.textContent = 'Solitario';
+                    createSolitarioGame();
+                    break;
+                case 'tetris':
+                    gameTitle.textContent = 'Tetris';
+                    createTetrisGame();
+                    break;
+                case 'memory':
+                    gameTitle.textContent = 'Juego de Memoria';
+                    createMemoryGame();
+                    break;
+                case 'hangman':
+                    gameTitle.textContent = 'Ahorcado';
+                    createHangmanGame();
+                    break;
+                case 'pong':
+                    gameTitle.textContent = 'Pong';
+                    createPongGame();
+                    break;
+                case 'guessing':
+                    gameTitle.textContent = 'Juego de Adivinanzas';
+                    createGuessingGame();
+                    break;
+                default:
+                    gameTitle.textContent = 'Juego Desconocido';
+                    gameContent.innerHTML = '<p>Selecciona un juego del menú.</p>';
+            }
+        }
+
+        function resetCurrentGame() {
+            if (currentGame && typeof currentGame.reset === 'function') {
+                currentGame.reset();
+            }
+        }
+
+        function backToMainMenu() {
+            gameContainer.style.display = 'none';
+            backToMenuButton.style.display = 'none';
+            if (currentGame && typeof currentGame.cleanup === 'function') {
+                currentGame.cleanup();
+            }
+            currentGame = null; // Clear current game state
+        }
+
+        // --- Tic-Tac-Toe (mantener lógica anterior) ---
+        let ticTacToeBoardElement;
+        let ticTacToeCurrentPlayer;
+        let ticTacToeGameActive;
+        let ticTacToeBoardState;
+        const ticTacToeWinningConditions = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+            [0, 4, 8], [2, 4, 6]
+        ];
+
+        function createTicTacToeGame() {
+            gameContent.innerHTML = '<div id="tic-tac-toe-board"></div>';
+            ticTacToeBoardElement = document.getElementById('tic-tac-toe-board');
+            initializeTicTacToe();
+            currentGame = {
+                name: 'tic-tac-toe',
+                reset: initializeTicTacToe,
+                cleanup: () => { /* No special cleanup needed for Tic-Tac-Toe */ }
+            };
+        }
+
+        function initializeTicTacToe() {
+            ticTacToeBoardElement.innerHTML = '';
+            ticTacToeBoardState = ['', '', '', '', '', '', '', '', ''];
+            ticTacToeCurrentPlayer = 'X';
+            ticTacToeGameActive = true;
+            gameMessage.textContent = `Turno del jugador ${ticTacToeCurrentPlayer}`;
+            resetButton.style.display = 'none';
+
+            for (let i = 0; i < 9; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.dataset.index = i;
+                cell.addEventListener('click', handleTicTacToeCellClick);
+                ticTacToeBoardElement.appendChild(cell);
+            }
+        }
+
+        function handleTicTacToeCellClick(event) {
+            const clickedCell = event.target;
+            const clickedCellIndex = parseInt(clickedCell.dataset.index);
+
+            if (ticTacToeBoardState[clickedCellIndex] !== '' || !ticTacToeGameActive) {
+                return;
+            }
+
+            ticTacToeBoardState[clickedCellIndex] = ticTacToeCurrentPlayer;
+            clickedCell.textContent = ticTacToeCurrentPlayer;
+            clickedCell.classList.add(ticTacToeCurrentPlayer);
+
+            checkTicTacToeResult();
+        }
+
+        function checkTicTacToeResult() {
+            let roundWon = false;
+            for (let i = 0; i < ticTacToeWinningConditions.length; i++) {
+                const winCondition = ticTacToeWinningConditions[i];
+                let a = ticTacToeBoardState[winCondition[0]];
+                let b = ticTacToeBoardState[winCondition[1]];
+                let c = ticTacToeBoardState[winCondition[2]];
+
+                if (a === '' || b === '' || c === '') {
+                    continue;
+                }
+                if (a === b && b === c) {
+                    roundWon = true;
+                    break;
+                }
+            }
+
+            if (roundWon) {
+                gameMessage.textContent = `¡El jugador ${ticTacToeCurrentPlayer} ha ganado!`;
+                ticTacToeGameActive = false;
+                resetButton.style.display = 'block';
+                return;
+            }
+
+            let roundDraw = !ticTacToeBoardState.includes('');
+            if (roundDraw) {
+                gameMessage.textContent = '¡Es un empate!';
+                ticTacToeGameActive = false;
+                resetButton.style.display = 'block';
+                return;
+            }
+
+            ticTacToeCurrentPlayer = ticTacToeCurrentPlayer === 'X' ? 'O' : 'X';
+            gameMessage.textContent = `Turno del jugador ${ticTacToeCurrentPlayer}`;
+        }
+
+        // --- Solitario (Reimplementación de tu lógica original, adaptada a JS) ---
+        const solitarioPalos = ['b', 'c', 'e', 'o']; // bastos, copas, espadas, oros
+
+        function createSolitarioGame() {
+            gameContent.innerHTML = `
+                <div id="solitario-game">
+                    <p id="solitario-machine-cards-display">Cartas de la máquina:</p>
+                    <div class="solitario-cards" id="solitario-machine-cards"></div>
+                    <div id="solitario-player-input">
+                        <input type="text" id="solitario-player-name" class="game-input" placeholder="Tu nombre" maxlength="50">
+                        <button class="game-button" onclick="startSolitarioGame()">Empezar</button>
+                    </div>
+                    <p id="solitario-player-message"></p>
+                    <div id="solitario-player-hand" class="solitario-cards"></div>
+                    <button id="solitario-draw-button" class="game-button" style="display:none;">Sacar Carta</button>
+                    <p id="solitario-current-score"></p>
+                    <p id="solitario-result"></p>
+                </div>
+            `;
+            currentGame = {
+                name: 'solitario',
+                reset: createSolitarioGame,
+                cleanup: () => {
+                    // No hay intervalos o event listeners especiales que limpiar aquí
+                }
+            };
+        }
+
+        let solitarioMazoGlobal = [];
+        let solitarioNaipesMaquina = [];
+        let solitarioJugadorActual = 0; // Solo 1 jugador real
+        let solitarioJugadas = [];
+        let solitarioNumCartasRobadas = 0;
+        let solitarioPlayerName = '';
+
+        function startSolitarioGame() {
+            solitarioPlayerName = document.getElementById('solitario-player-name').value.trim();
+            if (!solitarioPlayerName) {
+                gameMessage.textContent = 'Por favor, ingresa tu nombre para empezar.';
+                return;
+            }
+            document.getElementById('solitario-player-input').style.display = 'none';
+            document.getElementById('solitario-player-message').textContent = '';
+            document.getElementById('solitario-current-score').textContent = '';
+            document.getElementById('solitario-result').textContent = '';
+            solitarioJugadorActual = 0;
+            solitarioJugadas = [];
+            solitarioNumCartasRobadas = 0;
+            gameMessage.textContent = ''; // Limpiar mensaje inicial
+
+            initializeSolitarioDeck();
+            dealSolitarioMachineCards();
+            dealSolitarioPlayerCards();
+            resetButton.style.display = 'none';
+        }
+
+        function initializeSolitarioDeck() {
+            solitarioMazoGlobal = [];
+            for (let i = 0; i < 40; i++) {
+                let numero = (i % 10) + 1;
+                if (numero > 7) {
+                    numero += 2; // Simula las cartas 8, 9, 10
+                }
+                solitarioMazoGlobal.push({ numero: numero, palo: solitarioPalos[Math.floor(i / 10)] });
+            }
+            // Barajar el mazo
+            solitarioMazoGlobal = shuffle(solitarioMazoGlobal);
+        }
+
+        function displaySolitarioCard(card, parentElement, isHidden = false) {
+            const cardDiv = document.createElement('div');
+            cardDiv.classList.add('solitario-card');
+            if (isHidden) {
+                cardDiv.classList.add('hidden');
+            } else {
+                cardDiv.textContent = card.numero;
+                const paloSpan = document.createElement('span');
+                paloSpan.classList.add('solitario-palo');
+                paloSpan.textContent = card.palo;
+                cardDiv.appendChild(paloSpan);
+            }
+            parentElement.appendChild(cardDiv);
+        }
+
+        function dealSolitarioMachineCards() {
+            solitarioNaipesMaquina = [];
+            const machineCardsDiv = document.getElementById('solitario-machine-cards');
+            machineCardsDiv.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                const card = solitarioMazoGlobal.pop();
+                solitarioNaipesMaquina.push(card);
+                displaySolitarioCard(card, machineCardsDiv); // Mostrar las cartas de la máquina
+            }
+        }
+
+        function dealSolitarioPlayerCards() {
+            solitarioNumCartasRobadas = 0;
+            const playerHandDiv = document.getElementById('solitario-player-hand');
+            playerHandDiv.innerHTML = '';
+            solitarioJugadas[solitarioJugadorActual] = [];
+            document.getElementById('solitario-player-message').textContent = `${solitarioPlayerName}, saca 3 cartas.`;
+            document.getElementById('solitario-draw-button').style.display = 'block';
+            document.getElementById('solitario-draw-button').onclick = drawSolitarioCard;
+        }
+
+        function drawSolitarioCard() {
+            if (solitarioNumCartasRobadas < 3) {
+                if (solitarioMazoGlobal.length === 0) {
+                    gameMessage.textContent = '¡No quedan más cartas en el mazo!';
+                    document.getElementById('solitario-draw-button').style.display = 'none';
+                    endSolitarioTurn();
+                    return;
+                }
+                const drawnCard = solitarioMazoGlobal.pop();
+                solitarioJugadas[solitarioJugadorActual].push(drawnCard);
+
+                const playerHandDiv = document.getElementById('solitario-player-hand');
+                displaySolitarioCard(drawnCard, playerHandDiv);
+
+                solitarioNumCartasRobadas++;
+                document.getElementById('solitario-player-message').textContent = `Sacaste: ${drawnCard.numero} de ${drawnCard.palo}. Cartas robadas: ${solitarioNumCartasRobadas}/3`;
+
+                if (solitarioNumCartasRobadas === 3) {
+                    document.getElementById('solitario-draw-button').style.display = 'none';
+                    endSolitarioTurn();
+                }
+            }
+        }
+
+        function endSolitarioTurn() {
+            const playerHand = solitarioJugadas[solitarioJugadorActual];
+            let puntaje = 0;
+            for (let i = 0; i < playerHand.length; i++) {
+                const maquinaCard = solitarioNaipesMaquina[i];
+                const playerCard = playerHand[i];
+
+                if (maquinaCard.numero === playerCard.numero || maquinaCard.palo === playerCard.palo) {
+                    puntaje += 10;
+                }
+                if (Math.abs(maquinaCard.numero - playerCard.numero) === 1) {
+                    puntaje += 5;
+                }
+                if (Math.abs(maquinaCard.numero - playerCard.numero) === 2) {
+                    puntaje += 3;
+                }
+            }
+            document.getElementById('solitario-current-score').textContent = `${solitarioPlayerName}, tu puntaje es: ${puntaje} puntos.`;
+            document.getElementById('solitario-result').textContent = `¡La partida terminó! ${solitarioPlayerName} consiguió ${puntaje} puntos.`;
+            resetButton.style.display = 'block';
+        }
+
+        // --- Tetris (mantener lógica anterior) ---
+        const TETRIS_ROWS = 20;
+        const TETRIS_COLS = 10;
+        const TETRIS_BLOCK_SIZE = 25; // px (se ajusta en CSS con la media query)
+
+        let tetrisCanvas, tetrisCtx;
+        let tetrisNextPieceCanvas, tetrisNextPieceCtx;
+        let tetrisGrid;
+        let tetrisCurrentPiece;
+        let tetrisNextPiece;
+        let tetrisGameInterval;
+        let tetrisScore;
+        let tetrisGameOver;
+
+        const TETROMINOES = [
+            [[0,0,0,0], [1,1,1,1], [0,0,0,0], [0,0,0,0]], // I
+            [[1,0,0], [1,1,1], [0,0,0]],                 // J
+            [[0,0,1], [1,1,1], [0,0,0]],                 // L
+            [[1,1], [1,1]],                              // O
+            [[0,1,1], [1,1,0], [0,0,0]],                 // S
+            [[0,1,0], [1,1,1], [0,0,0]],                 // T
+            [[1,1,0], [0,1,1], [0,0,0]]                  // Z
+        ];
+
+        const TETROMINO_COLORS = [
+            'I', 'J', 'L', 'O', 'S', 'T', 'Z' // Usaremos clases CSS para colores
+        ];
+
+        function createTetrisGame() {
+            gameContent.innerHTML = `
+                <div id="tetris-game">
+                    <canvas id="tetris-canvas" width="${TETRIS_COLS * TETRIS_BLOCK_SIZE}" height="${TETRIS_ROWS * TETRIS_BLOCK_SIZE}"></canvas>
+                    <div id="tetris-info">
+                        <p>Puntuación: <span id="tetris-score">0</span></p>
+                        <p>Siguiente:</p>
+                        <canvas id="tetris-next-piece-canvas" width="100" height="100"></canvas>
+                        <p>Controles:</p>
+                        <ul>
+                            <li>⬅️➡️: Mover</li>
+                            <li>⬇️: Caída suave</li>
+                            <li>⬆️: Rotar</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+            tetrisCanvas = document.getElementById('tetris-canvas');
+            tetrisCtx = tetrisCanvas.getContext('2d');
+            tetrisNextPieceCanvas = document.getElementById('tetris-next-piece-canvas');
+            tetrisNextPieceCtx = tetrisNextPieceCanvas.getContext('2d');
+
+            initializeTetris();
+            currentGame = {
+                name: 'tetris',
+                reset: initializeTetris,
+                cleanup: () => {
+                    clearInterval(tetrisGameInterval);
+                    document.removeEventListener('keydown', handleTetrisKeyDown);
+                }
+            };
+        }
+
+        function initializeTetris() {
+            tetrisGrid = Array(TETRIS_ROWS).fill(0).map(() => Array(TETRIS_COLS).fill(0));
+            tetrisScore = 0;
+            tetrisGameOver = false;
+            document.getElementById('tetris-score').textContent = tetrisScore;
+            gameMessage.textContent = '';
+            resetButton.style.display = 'none';
+
+            if (tetrisGameInterval) clearInterval(tetrisGameInterval);
+            document.removeEventListener('keydown', handleTetrisKeyDown);
+
+            spawnTetrisPiece();
+            spawnTetrisPiece(true); // Generar la siguiente pieza
+            drawTetris();
+            tetrisGameInterval = setInterval(moveTetrisPieceDown, 500);
+            document.addEventListener('keydown', handleTetrisKeyDown);
+        }
+
+        function spawnTetrisPiece(isNext = false) {
+            const randomIndex = Math.floor(Math.random() * TETROMINOES.length);
+            const newPiece = {
+                shape: TETROMINOES[randomIndex],
+                colorClass: TETROMINO_COLORS[randomIndex], // Usamos la clase para el color
+                x: Math.floor(TETRIS_COLS / 2) - Math.floor(TETROMINOES[randomIndex][0].length / 2),
+                y: 0
+            };
+            if (isNext) {
+                tetrisNextPiece = newPiece;
+                drawTetrisNextPiece();
+            } else {
+                tetrisCurrentPiece = newPiece;
+                if (checkTetrisCollision(tetrisCurrentPiece.x, tetrisCurrentPiece.y, tetrisCurrentPiece.shape)) {
+                    tetrisGameOver = true;
+                    clearInterval(tetrisGameInterval);
+                    gameMessage.textContent = '¡Game Over! Puntuación final: ' + tetrisScore;
+                    resetButton.style.display = 'block';
+                }
+            }
+        }
+
+        function drawTetris() {
+            tetrisCtx.clearRect(0, 0, tetrisCtx.canvas.width, tetrisCtx.canvas.height);
+
+            // Dibujar el tablero con los colores de las clases CSS
+            for (let r = 0; r < TETRIS_ROWS; r++) {
+                for (let c = 0; c < TETRIS_COLS; c++) {
+                    if (tetrisGrid[r][c] !== 0) {
+                        const cell = document.createElement('div');
+                        cell.className = `tetris-cell ${tetrisGrid[r][c]}`;
+                        cell.style.position = 'absolute';
+                        cell.style.left = `${c * TETRIS_BLOCK_SIZE}px`;
+                        cell.style.top = `${r * TETRIS_BLOCK_SIZE}px`;
+                        // Se usa la función `getComputedStyle` para obtener el color del CSS
+                        tetrisCtx.fillStyle = window.getComputedStyle(document.body).getPropertyValue('--bg-color'); // Valor por defecto
+                        let tempDiv = document.createElement('div');
+                        tempDiv.className = `tetris-cell ${tetrisGrid[r][c]}`;
+                        document.body.appendChild(tempDiv);
+                        tetrisCtx.fillStyle = window.getComputedStyle(tempDiv).backgroundColor;
+                        document.body.removeChild(tempDiv);
+
+                        drawTetrisBlock(c, r, tetrisCtx.fillStyle);
+                    }
+                }
+            }
+
+            // Dibujar la pieza actual
+            if (tetrisCurrentPiece) {
+                const tempDiv = document.createElement('div');
+                tempDiv.className = `tetris-cell ${tetrisCurrentPiece.colorClass}`;
+                document.body.appendChild(tempDiv);
+                const currentColor = window.getComputedStyle(tempDiv).backgroundColor;
+                document.body.removeChild(tempDiv);
+
+                for (let r = 0; r < tetrisCurrentPiece.shape.length; r++) {
+                    for (let c = 0; c < tetrisCurrentPiece.shape[r].length; c++) {
+                        if (tetrisCurrentPiece.shape[r][c] !== 0) {
+                            drawTetrisBlock(tetrisCurrentPiece.x + c, tetrisCurrentPiece.y + r, currentColor);
+                        }
+                    }
+                }
+            }
+        }
+
+        function drawTetrisBlock(x, y, color) {
+            tetrisCtx.fillStyle = color;
+            tetrisCtx.fillRect(x * TETRIS_BLOCK_SIZE, y * TETRIS_BLOCK_SIZE, TETRIS_BLOCK_SIZE, TETRIS_BLOCK_SIZE);
+            tetrisCtx.strokeStyle = '#222';
+            tetrisCtx.lineWidth = 1;
+            tetrisCtx.strokeRect(x * TETRIS_BLOCK_SIZE, y * TETRIS_BLOCK_SIZE, TETRIS_BLOCK_SIZE, TETRIS_BLOCK_SIZE);
+        }
+
+        function drawTetrisNextPiece() {
+            tetrisNextPieceCtx.clearRect(0, 0, tetrisNextPieceCtx.canvas.width, tetrisNextPieceCtx.canvas.height);
+            if (tetrisNextPiece) {
+                const shape = tetrisNextPiece.shape;
+                const colorClass = tetrisNextPiece.colorClass;
+
+                const tempDiv = document.createElement('div');
+                tempDiv.className = `tetris-cell ${colorClass}`;
+                document.body.appendChild(tempDiv);
+                const currentColor = window.getComputedStyle(tempDiv).backgroundColor;
+                document.body.removeChild(tempDiv);
+
+                for (let r = 0; r < shape.length; r++) {
+                    for (let c = 0; c < shape[r].length; c++) {
+                        if (shape[r][c] !== 0) {
+                            tetrisNextPieceCtx.fillStyle = currentColor;
+                            tetrisNextPieceCtx.fillRect(c * (TETRIS_BLOCK_SIZE * 0.8), r * (TETRIS_BLOCK_SIZE * 0.8), (TETRIS_BLOCK_SIZE * 0.8), (TETRIS_BLOCK_SIZE * 0.8));
+                            tetrisNextPieceCtx.strokeStyle = '#222';
+                            tetrisNextPieceCtx.lineWidth = 1;
+                            tetrisNextPieceCtx.strokeRect(c * (TETRIS_BLOCK_SIZE * 0.8), r * (TETRIS_BLOCK_SIZE * 0.8), (TETRIS_BLOCK_SIZE * 0.8), (TETRIS_BLOCK_SIZE * 0.8));
+                        }
+                    }
+                }
+            }
+        }
+
+        function checkTetrisCollision(newX, newY, newShape) {
+            for (let r = 0; r < newShape.length; r++) {
+                for (let c = 0; c < newShape[r].length; c++) {
+                    if (newShape[r][c] !== 0) {
+                        const boardX = newX + c;
+                        const boardY = newY + r;
+
+                        if (boardX < 0 || boardX >= TETRIS_COLS || boardY >= TETRIS_ROWS) {
+                            return true;
+                        }
+                        if (boardY < 0) {
+                            continue;
+                        }
+                        if (tetrisGrid[boardY][boardX] !== 0) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        function solidifyTetrisPiece() {
+            for (let r = 0; r < tetrisCurrentPiece.shape.length; r++) {
+                for (let c = 0; c < tetrisCurrentPiece.shape[r].length; c++) {
+                    if (tetrisCurrentPiece.shape[r][c] !== 0) {
+                        if (tetrisCurrentPiece.y + r >= 0) {
+                             tetrisGrid[tetrisCurrentPiece.y + r][tetrisCurrentPiece.x + c] = tetrisCurrentPiece.colorClass;
+                        }
+                    }
+                }
+            }
+            clearTetrisLines();
+            tetrisCurrentPiece = tetrisNextPiece;
+            spawnTetrisPiece(true);
+        }
+
+        function clearTetrisLines() {
+            let linesCleared = 0;
+            for (let r = TETRIS_ROWS - 1; r >= 0; r--) {
+                if (tetrisGrid[r].every(cell => cell !== 0)) {
+                    linesCleared++;
+                    tetrisGrid.splice(r, 1);
+                    tetrisGrid.unshift(Array(TETRIS_COLS).fill(0));
+                    r++;
+                }
+            }
+            if (linesCleared > 0) {
+                tetrisScore += linesCleared * 100;
+                document.getElementById('tetris-score').textContent = tetrisScore;
+            }
+        }
+
+        function rotateTetrisPiece(piece) {
+            const newShape = piece.shape[0].map((val, index) => piece.shape.map(row => row[index]).reverse());
+            return { ...piece, shape: newShape };
+        }
+
+        function moveTetrisPieceDown() {
+            if (tetrisGameOver) return;
+            const newY = tetrisCurrentPiece.y + 1;
+            if (!checkTetrisCollision(tetrisCurrentPiece.x, newY, tetrisCurrentPiece.shape)) {
+                tetrisCurrentPiece.y = newY;
+            } else {
+                solidifyTetrisPiece();
+            }
+            drawTetris();
+        }
+
+        function handleTetrisKeyDown(event) {
+            if (tetrisGameOver) return;
+            switch (event.key) {
+                case 'ArrowLeft':
+                    if (!checkTetrisCollision(tetrisCurrentPiece.x - 1, tetrisCurrentPiece.y, tetrisCurrentPiece.shape)) {
+                        tetrisCurrentPiece.x--;
+                    }
+                    break;
+                case 'ArrowRight':
+                    if (!checkTetrisCollision(tetrisCurrentPiece.x + 1, tetrisCurrentPiece.y, tetrisCurrentPiece.shape)) {
+                        tetrisCurrentPiece.x++;
+                    }
+                    break;
+                case 'ArrowDown':
+                    moveTetrisPieceDown();
+                    break;
+                case 'ArrowUp':
+                    const rotatedPiece = rotateTetrisPiece(tetrisCurrentPiece);
+                    if (!checkTetrisCollision(tetrisCurrentPiece.x, tetrisCurrentPiece.y, rotatedPiece.shape)) {
+                        tetrisCurrentPiece.shape = rotatedPiece.shape;
+                    }
+                    break;
+            }
+            drawTetris();
+        }
+
+
+        // --- Juego de Memoria (mantener lógica anterior) ---
+        let memoryCardsElements = [];
+        let memoryFlippedCards = [];
+        let memoryMatchedCards = 0;
+        let memoryAttempts = 0;
+        let memoryGameActive = false;
+        let memoryTimeout;
+
+        const memoryIcons = ['🍎', '🍌', '🍒', '🍇', '🍋', '🥝', '🍓', '🍍', '🍉', '🍊']; // Ahora 10 pares para un tablero más grande
+
+        function createMemoryGame() {
+            gameContent.innerHTML = `
+                <div id="memory-game">
+                    <p>Intentos: <span id="memory-attempts">0</span></p>
+                    <div id="memory-grid"></div>
+                </div>
+            `;
+            initializeMemoryGame();
+            currentGame = {
+                name: 'memory',
+                reset: initializeMemoryGame,
+                cleanup: () => {
+                    clearTimeout(memoryTimeout);
+                }
+            };
+        }
+
+        function initializeMemoryGame() {
+            clearTimeout(memoryTimeout);
+            memoryCardsElements = [];
+            memoryFlippedCards = [];
+            memoryMatchedCards = 0;
+            memoryAttempts = 0;
+            memoryGameActive = true;
+            document.getElementById('memory-attempts').textContent = memoryAttempts;
+            gameMessage.textContent = 'Encuentra los pares.';
+            resetButton.style.display = 'none';
+
+            const shuffledIcons = shuffle([...memoryIcons, ...memoryIcons]);
+            const memoryGrid = document.getElementById('memory-grid');
+            memoryGrid.innerHTML = '';
+            // Ajustar el grid para el número de cartas
+            const numColumns = window.innerWidth > 768 ? 5 : (window.innerWidth > 480 ? 4 : 3);
+            memoryGrid.style.gridTemplateColumns = `repeat(${numColumns}, 1fr)`;
+
+            shuffledIcons.forEach((icon, index) => {
+                const card = document.createElement('div');
+                card.classList.add('memory-card');
+                card.dataset.icon = icon;
+                card.dataset.index = index;
+                card.addEventListener('click', handleMemoryCardClick);
+                memoryGrid.appendChild(card);
+                memoryCardsElements.push(card);
+            });
+        }
+
+        function handleMemoryCardClick(event) {
+            const clickedCard = event.target;
+
+            if (!memoryGameActive || clickedCard.classList.contains('flipped') || clickedCard.classList.contains('matched') || memoryFlippedCards.length === 2) {
+                return;
+            }
+
+            clickedCard.classList.add('flipped');
+            clickedCard.textContent = clickedCard.dataset.icon;
+            memoryFlippedCards.push(clickedCard);
+
+            if (memoryFlippedCards.length === 2) {
+                memoryAttempts++;
+                document.getElementById('memory-attempts').textContent = memoryAttempts;
+                checkForMatch();
+            }
+        }
+
+        function checkForMatch() {
+            const [card1, card2] = memoryFlippedCards;
+
+            if (card1.dataset.icon === card2.dataset.icon) {
+                card1.classList.add('matched');
+                card2.classList.add('matched');
+                card1.classList.remove('flipped'); // Quitamos flipped para que no se vea el fondo claro
+                card2.classList.remove('flipped');
+                memoryMatchedCards += 2;
+                memoryFlippedCards = [];
+                if (memoryMatchedCards === memoryCardsElements.length) {
+                    gameMessage.textContent = `¡Felicidades! Encontraste todos los pares en ${memoryAttempts} intentos.`;
+                    memoryGameActive = false;
+                    resetButton.style.display = 'block';
+                }
+            } else {
+                memoryTimeout = setTimeout(() => {
+                    card1.classList.remove('flipped');
+                    card1.textContent = '';
+                    card2.classList.remove('flipped');
+                    card2.textContent = '';
+                    memoryFlippedCards = [];
+                }, 1000);
+            }
+        }
+
+        // --- Ahorcado (mantener lógica anterior) ---
+        const hangmanWords = [
+            'PROGRAMACION', 'JAVASCRIPT', 'HTML', 'CSS', 'DESARROLLO', 'ALGORITMO', 'COMPUTADORA', 'INTERNET',
+            'TECLADO', 'MONITOR', 'RATON', 'SOFTWARE', 'HARDWARE', 'SERVIDOR', 'CLIENTE', 'FRAMEWORK',
+            'LIBRERIA', 'FUNCION', 'VARIABLE', 'CONSTANTE', 'BUCLE', 'CONDICIONAL', 'ARREGLO', 'OBJETO',
+            'METODO', 'CLASE', 'HERENCIA', 'POLIMORFISMO', 'ENCAPSULAMIENTO', 'ASINCRONO', 'PROMESA',
+            'CALLBACK', 'EVENTO', 'RENDERIZAR', 'DEPURACION', 'COMPILAR', 'INTERPRETAR', 'DEPLOYAR',
+            'REPOSITORIO', 'COMANDO', 'TERMINAL', 'CONSOLA', 'GITHUB', 'STACKOVERFLOW', 'NPM', 'YARN',
+            'REACT', 'ANGULAR', 'VUEJS', 'NODEJS', 'PYTHON', 'JAVA', 'CPLUSPLUS', 'PHP', 'RUBY', 'SWIFT',
+            'KOTLIN', 'TYPESCRIPT', 'SQL', 'NOSQL', 'API', 'REST', 'GRAPHQL', 'WEBHOOK', 'BLOCHAIN', 'CRIPTOMONEDA',
+            'INTELIGENCIA', 'ARTIFICIAL', 'MACHINELEARNING', 'DEEPLEARNING', 'BIGDATA', 'CLOUD', 'DEVOPS',
+            'AUTOMATIZACION', 'TESTING', 'SEGURIDAD', 'CIPHER', 'ENCRIPTACION', 'FIREWALL', 'PROTOCOL', 'RED',
+            'ROUTER', 'SWITCH', 'PAQUETE', 'ANCHO DE BANDA', 'LATENCIA', 'DIRECCION', 'IP', 'DNS', 'HTTP', 'HTTPS',
+            'FTP', 'SSH', 'CACHE', 'COOKIE', 'SESION', 'TOKEN', 'AUTENTICACION', 'AUTORIZACION', 'HASH',
+            'ALGORITMO DE HASH', 'CRIPTOANÁLISIS', 'PHISHING', 'MALWARE', 'VIRUS', 'TROYANO', 'GUSANO',
+            'RAM', 'ROM', 'CPU', 'GPU', 'PLACA MADRE', 'FUENTE DE PODER', 'DISCO DURO', 'SSD', 'USB', 'BLUETOOTH',
+            'WIFI', 'ETHERNET', 'FIBRA OPTICA', 'COMPRESION', 'DESCOMPRESION', 'BACKUP', 'RESTAURACION',
+            'VERSIONAMIENTO', 'GIT', 'COMMIT', 'BRANCH', 'MERGE', 'PULLREQUEST', 'PUSH', 'CLONE', 'FORK',
+            'AGILE', 'SCRUM', 'KANBAN', 'SPRINT', 'RETROSPECTIVA', 'PRODUCTOWNER', 'SCRUMMASTER', 'DEVELOPER',
+            'USERSTORY', 'BUG', 'FEATURE', 'EPIC', 'RELEASE', 'BUILD', 'DEPLOYMENT', 'INTEGRACION CONTINUA',
+            'DELIVERY CONTINUO', 'AUTOMATIZACION DE PRUEBAS', 'RENDIMIENTO', 'ESCALABILIDAD', 'LATENCIA',
+            'ANÁLISIS DE DATOS', 'VISUALIZACION', 'DASHBOARD', 'REPORTING', 'ETL', 'DATAMINING', 'BIGDATA',
+            'DEVOPS', 'DOCKER', 'KUBERNETES', 'MICROSERVICIOS', 'CONTAINER', 'VIRTUALIZACION', 'SERVERLESS',
+            'AWS', 'AZURE', 'GOOGLECLOUD', 'HEROKU', 'NETLIFY', 'VERCEL', 'FIREBASE', 'MONGODB', 'POSTGRESQL',
+            'MYSQL', 'REDIS', 'ELASTICSEARCH', 'KAFKA', 'RABBITMQ', 'APACHE', 'NGINX', 'TOMCAT', 'JENKINS',
+            'GITLABCI', 'TRELLO', 'JIRA', 'SLACK', 'DISCORD', 'ZOOM', 'MEET', 'TEAMS', 'OUTLOOK', 'GMAIL',
+            'CALENDARIO', 'DOCUMENTOS', 'HOJAS DE CALCULO', 'PRESENTACIONES', 'SISTEMA OPERATIVO', 'LINUX',
+            'WINDOWS', 'MACOS', 'ANDROID', 'IOS', 'UBUNTU', 'DEBIAN', 'FEDORA', 'CENTOS', 'REDHAT', 'SUSE',
+            'KERNEL', 'SHELL', 'BASH', 'ZSH', 'POWERSHELL', 'COMANDOS', 'PROCESO', 'HILO', 'MEMORIA', 'CPU',
+            'DISPOSITIVO', 'PERIFERICO', 'DRIVERS', 'FIRMWARE', 'BIOS', 'UEFI', 'BOOT', 'GRUB', 'LILO',
+            'PARTICION', 'FORMATO', 'ARCHIVO', 'DIRECTORIO', 'RUTA', 'EXTENSION', 'PERMISOS', 'PROPIETARIO',
+            'GRUPO', 'ENLACE SIMBOLICO', 'ENLACE DURO', 'BIT', 'BYTE', 'KILOBYTE', 'MEGABYTE', 'GIGABYTE',
+            'TERABYTE', 'PETABYTE', 'EXABYTE', 'ZETTABYTE', 'YOTTABYTE', 'OCTETO', 'HEXADECIMAL', 'BINARIO',
+            'DECIMAL', 'OCTAL', 'LOGICA', 'ALGEBRA BOOLEANA', 'COMPUERTA LOGICA', 'CIRCUITO', 'REGISTRO',
+            'CONTADOR', 'MULTIPLEXOR', 'DEMULTIPLEXOR', 'CODIFICADOR', 'DECODIFICADOR', 'FLIPFLOP',
+            'ARQUITECTURA', 'VON NEUMANN', 'HARVARD', 'CISCO', 'JUNIPER', 'HUAWEI', 'CISCO IOS', 'JUNOS',
+            'ENRUTAMIENTO', 'CONMUTACION', 'VLAN', 'VPN', 'FIREWALL', 'IDS', 'IPS', 'SIEM', 'SOC', 'CERTIFICADO',
+            'SSL', 'TLS', 'PKI', 'FIRMA DIGITAL', 'CRIPTOGRAFIA', 'AES', 'RSA', 'SHA', 'MD5', 'BLOWFISH',
+            'TWOFISH', 'SERPENT', 'RIJNDAEL', 'AES256', 'DES', 'TRIPLEDES', 'GCM', 'CBC', 'ECB', 'XTS',
+            'STREAM CIPHER', 'BLOCK CIPHER', 'SALT', 'IV', 'NONCE', 'KEY DERIVATION', 'PASSWORD HASHING',
+            'BRUTE FORCE', 'DICTIONARY ATTACK', 'RAINBOW TABLE', 'SQL INJECTION', 'XSS', 'CSRF', 'DDOS',
+            'MITM', 'ZERODAY', 'VULNERABILIDAD', 'EXPLOIT', 'PATCH', 'SERVICE PACK', 'ROLLUP', 'HOTFIX',
+            'UPDATES', 'MAINTENANCE', 'SECURITY', 'PRIVACY', 'GDPR', 'CCPA', 'HIPAA', 'ISO27001', 'NIST',
+            'PCI DSS', 'SOX', 'GDPR COMPLIANCE', 'AUDITORIA', 'PENETRACION', 'FORENSE DIGITAL', 'INCIDENTE',
+            'RESPUESTA A INCIDENTES', 'PLAN DE RECUPERACION ANTE DESASTRES', 'CONTINUIDAD DEL NEGOCIO',
+            'RIESGO', 'AMENAZA', 'VULNERABILIDAD', 'CONTRAMEDIDA', 'CONTROLES', 'POLITICA DE SEGURIDAD',
+            'CONCIENTIZACION', 'CAPACITACION', 'ETICA HACKING', 'BUG BOUNTY', 'RESPONSIBLE DISCLOSURE',
+            'CVE', 'CVSS', 'METASPLOIT', 'NESSUS', 'BURP SUITE', 'WIRESHARK', 'NMAP', 'AIRCACKNG', 'HYDRA',
+            'JOHN THE RIPPER', 'CUPP', 'SETOOLKIT', 'VEIL', 'COBALTSTRIKE', 'ARMORY', 'FOCA', 'MALTEGO',
+            'OSINT', 'SOCIAL ENGINEERING', 'PRETEXTING', 'PHISHING', 'SPEAR PHISHING', 'WHALING', 'SMISHING',
+            'VISHING', 'TAILGATING', 'SHOULDER SURFING', 'DUMPSTER DIVING', 'BAITING', 'QUI PRO QUO',
+            'WATERING HOLE', 'ZERO DAY', 'APT', 'RANSOMWARE', 'SPYWARE', 'ADWARE', 'ROOTKIT', 'BOTNET',
+            'SNIFFER', 'PACKET ANALYZER', 'PROTOCOL ANALYZER', 'FIREWALL LOGS', 'IDS LOGS', 'IPS LOGS',
+            'SIEM LOGS', 'WEB SERVER LOGS', 'DATABASE LOGS', 'AUTHENTICATION LOGS', 'AUDIT LOGS',
+            'EVENT LOGS', 'SYSTEM LOGS', 'KERNEL LOGS', 'DEBUG LOGS', 'ACCESS LOGS', 'ERROR LOGS',
+            'SECURITY LOGS', 'AUDIT TRAILS', 'FORENSIC ARTIFACTS', 'MEMORY DUMP', 'DISK IMAGE',
+            'NETWORK TRAFFIC CAPTURE', 'REGISTRY', 'FILESYSTEM', 'PROCESSES', 'THREADS', 'HANDLES',
+            'DLLS', 'SERVICES', 'DRIVERS', 'SCHEDULED TASKS', 'STARTUP PROGRAMS', 'NETWORK CONNECTIONS',
+            'OPEN PORTS', 'FIREWALL RULES', 'HOSTS FILE', 'ROUTING TABLE', 'ARP CACHE', 'DNS CACHE',
+            'LOCAL SECURITY POLICY', 'GROUP POLICY', 'ACTIVE DIRECTORY', 'LDAP', 'KERBEROS', 'NTLM',
+            'SINGLE SIGN ON', 'SSO', 'MULTI FACTOR AUTHENTICATION', 'MFA', 'TWO FACTOR AUTHENTICATION',
+            '2FA', 'BIOMETRIC AUTHENTICATION', 'FINGERPRINT', 'FACIAL RECOGNITION', 'IRIS SCAN',
+            'VOICE RECOGNITION', 'BEHAVIORAL BIOMETRICS', 'PHYSICAL SECURITY', 'ACCESS CONTROL',
+            'CCTV', 'ALARM SYSTEMS', 'BIOMETRIC READERS', 'SMART CARDS', 'RFID', 'NFC', 'PHYSICAL LOCKS',
+            'BARRIERS', 'FENCES', 'GUARDS', 'DOGS', 'SECURITY BREACH', 'DATA BREACH', 'CYBERATTACK',
+            'CYBERWARFARE', 'CYBERCRIME', 'HACKING', 'CRACKING', 'PHREAKING', 'WAREZ', 'PIRACY',
+            'COPYRIGHT INFRINGEMENT', 'TRADEMARK INFRINGEMENT', 'PATENT INFRINGEMENT', 'LICENSING',
+            'EULA', 'TERMS OF SERVICE', 'PRIVACY POLICY', 'DATA PROTECTION', 'DATA GOVERNANCE',
+            'DATA LIFECYCLE MANAGEMENT', 'DATA CLASSIFICATION', 'DATA OWNERSHIP', 'DATA STEWARDSHIP',
+            'DATA CUSTODIAN', 'DATA SUBJECT', 'DATA CONTROLLER', 'DATA PROCESSOR', 'CONSENT',
+            'RIGHT TO BE FORGOTTEN', 'DATA PORTABILITY', 'PRIVACY BY DESIGN', 'PRIVACY BY DEFAULT',
+            'IMPACT ASSESSMENT', 'DATA PROTECTION OFFICER', 'REGULATORY COMPLIANCE', 'LEGAL FRAMEWORK',
+            'ETHICS', 'MORALITY', 'RESPONSIBILITY', 'ACCOUNTABILITY', 'TRANSPARENCY', 'FAIRNESS',
+            'NON DISCRIMINATION', 'BENEFICENCE', 'NON MALEFICENCE', 'AUTONOMY', 'JUSTICE', 'VERACITY',
+            'FIDELITY', 'CONFIDENTIALITY', 'INTEGRITY', 'AVAILABILITY', 'AUTHENTICITY', 'NON REPUDIATION',
+            'PRIVACY', 'SECURITY', 'TRUST', 'RISK ASSESSMENT', 'RISK MANAGEMENT', 'RISK MITIGATION',
+            'RISK ACCEPTANCE', 'RISK TRANSFER', 'RISK AVOIDANCE', 'CONTINGENCY PLAN', 'BUSINESS IMPACT',
+            'RECOVERY POINT OBJECTIVE', 'RPO', 'RECOVERY TIME OBJECTIVE', 'RTO', 'MAXIMUM TOLERABLE DOWNTIME',
+            'MTD', 'WORK RECOVERY TIME', 'WRT', 'DISASTER RECOVERY PLAN', 'DRP', 'BUSINESS CONTINUITY PLAN',
+            'BCP', 'INCIDENT RESPONSE PLAN', 'IRP', 'SECURITY INCIDENT', 'SECURITY EVENT', 'BREACH NOTIFICATION',
+            'CUSTOMER NOTIFICATION', 'REGULATOR NOTIFICATION', 'PUBLIC RELATIONS', 'CRISIS MANAGEMENT',
+            'MEDIA RELATIONS', 'LEGAL ADVICE', 'INSURANCE', 'CYBER INSURANCE', 'THREAT INTELLIGENCE',
+            'VULNERABILITY SCANNING', 'PENETRATION TESTING', 'RED TEAMING', 'BLUE TEAMING', 'PURPLE TEAMING',
+            'HUNTING', 'THREAT HUNTING', 'DIGITAL FORENSICS', 'EVIDENCE COLLECTION', 'CHAIN OF CUSTODY',
+            'MALWARE ANALYSIS', 'REVERSE ENGINEERING', 'SOFTWARE EXPLOITS', 'HARDWARE EXPLOITS',
+            'FIRMWARE EXPLOITS', 'ROOTKITS', 'BOOTKITS', 'KERNEL EXPLOITS', 'USER MODE EXPLOITS',
+            'PRIVILEGE ESCALATION', 'LATERAL MOVEMENT', 'COMMAND AND CONTROL', 'C2', 'EXFILTRATION',
+            'IMPACT', 'REMEDIATION', 'CONTAINMENT', 'ERADICATION', 'RECOVERY', 'LESSONS LEARNED',
+            'POST MORTEM', 'ANATOMY OF AN ATTACK', 'KILL CHAIN', 'MITRE ATTACK', 'LOCKHEED MARTIN',
+            'CYBER KILL CHAIN', 'ISACA', 'ISC2', 'COMPTIA', 'CERTIFICATION', 'CISSP', 'CISM', 'CISA',
+            'CEH', 'OSCP', 'GPEN', 'GCIH', 'GCFA', 'GSEC', 'SECURITY+', 'NETWORK+', 'A+', 'PENTEST+',
+            'CYSA+', 'CASP+', 'CISSP-ISSAP', 'CISSP-ISSEP', 'CISSP-CSSLP', 'CCSP', 'CCNA', 'CCNP',
+            'CCIE', 'JNCIA', 'JNCIS', 'JNCIP', 'JNCIE', 'MCSA', 'MCSE', 'RHCSA', 'RHCE', 'LPIC',
+            'PMP', 'CSM', 'CSPO', 'SAFe', 'ITIL', 'COBIT', 'TOGAF', 'ARQUITECTURA DE SOFTWARE',
+            'PATRONES DE DISEÑO', 'PRINCIPIOS SOLID', 'PROGRAMACION ORIENTADA A OBJETOS',
+            'PROGRAMACION FUNCIONAL', 'PROGRAMACION REACTIVA', 'PROGRAMACION CONCURRENTE',
+            'PROGRAMACION PARALELA', 'PROGRAMACION DISTRIBUIDA', 'MICROSERVICIOS', 'API GATEWAY',
+            'LOAD BALANCER', 'MESSAGE QUEUE', 'EVENT DRIVEN ARCHITECTURE', 'SERVERLESS', 'FAAS',
+            'PAAS', 'IAAS', 'SAAS', 'CLOUD NATIVE', 'DEVOPS PIPELINE', 'CI CD', 'VERSION CONTROL',
+            'SOURCE CODE MANAGEMENT', 'UNIT TESTING', 'INTEGRATION TESTING', 'ACCEPTANCE TESTING',
+            'SYSTEM TESTING', 'PERFORMANCE TESTING', 'SECURITY TESTING', 'USABILITY TESTING',
+            'ACCESSIBILITY TESTING', 'AUTOMATED TESTING', 'MANUAL TESTING', 'TEST DRIVEN DEVELOPMENT',
+            'TDD', 'BEHAVIOR DRIVEN DEVELOPMENT', 'BDD', 'AGILE METHODOLOGY', 'SCRUM FRAMEWORK',
+            'KANBAN SYSTEM', 'SPRINT PLANNING', 'DAILY SCRUM', 'SPRINT REVIEW', 'SPRINT RETROSPECTIVE',
+            'BACKLOG REFINEMENT', 'PRODUCT BACKLOG', 'SPRINT BACKLOG', 'INCREMENT', 'DEFINITION OF DONE',
+            'DEFINITION OF READY', 'TIMEBOXING', 'TRANSPARENCY', 'INSPECTION', 'ADAPTATION', 'COMMITMENT',
+            'FOCUS', 'OPENNESS', 'RESPECT', 'COURAGE', 'SELF ORGANIZING TEAM', 'CROSS FUNCTIONAL TEAM',
+            'SERVANT LEADER', 'FACILITATOR', 'COACH', 'MENTOR', 'PRODUCT OWNER ROLE', 'SCRUM MASTER ROLE',
+            'DEVELOPMENT TEAM ROLE', 'STAKEHOLDER ENGAGEMENT', 'COMMUNICATION', 'COLLABORATION',
+            'CONFLICT RESOLUTION', 'DECISION MAKING', 'PROBLEM SOLVING', 'INNOVATION', 'CONTINUOUS IMPROVEMENT',
+            'LEAN PRINCIPLES', 'WASTE REDUCTION', 'VALUE STREAM MAPPING', 'JUST IN TIME', 'KAIZEN',
+            'TOTAL QUALITY MANAGEMENT', 'SIX SIGMA', 'LEAN SIX SIGMA', 'DMAIC', 'DMADV', 'PROCESS IMPROVEMENT',
+            'BUSINESS PROCESS MANAGEMENT', 'BPM', 'BUSINESS ANALYTICS', 'DATA SCIENCE', 'MACHINE LEARNING',
+            'DEEP LEARNING', 'ARTIFICIAL INTELLIGENCE', 'NATURAL LANGUAGE PROCESSING', 'NLP',
+            'COMPUTER VISION', 'ROBOTICS', 'AUTOMATION', 'AUGMENTED REALITY', 'VIRTUAL REALITY',
+            'MIXED REALITY', 'CYBERPHYSICAL SYSTEMS', 'INTERNET OF THINGS', 'IOT', 'EDGE COMPUTING',
+            'QUANTUM COMPUTING', 'NEUROMORPHIC COMPUTING', 'BIOCONVERGENCE', 'SYNTHETIC BIOLOGY',
+            'GENE EDITING', 'CRISPR', 'NANO TECHNOLOGY', 'MATERIALS SCIENCE', 'ADVANCED MANUFACTURING',
+            '3D PRINTING', 'ROBOTIC PROCESS AUTOMATION', 'RPA', 'BUSINESS INTELLIGENCE', 'BI',
+            'DATA WAREHOUSING', 'DATA LAKES', 'DATA MIGRATION', 'DATA INTEGRATION', 'DATA QUALITY',
+            'DATA GOVERNANCE', 'MASTER DATA MANAGEMENT', 'MDM', 'DATA CATALOG', 'METADATA MANAGEMENT',
+            'DATA LINEMARGE', 'BIG DATA ECOSYSTEM', 'HADOOP', 'SPARK', 'KAFKA', 'FLINK', 'HIVE',
+            'PIG', 'SQOOP', 'FLUME', 'OOZIE', 'ZOOKEEPER', 'AMBARI', 'CLOUDERA', 'HORTONWORKS',
+            'MAPR', 'AZURE DATALAKE', 'AWS S3', 'GOOGLE CLOUD STORAGE', 'DATABRICKS', 'SNOWFLAKE',
+            'TERADATA', 'VERTICA', 'REDSHIFT', 'BIGQUERY', 'ATHENA', 'EMR', 'GLUE', 'KINESIS',
+            'SAGEMAKER', 'TRANSFORMERS', 'BERT', 'GPT', 'LLM', 'AI ETHICS', 'AI BIAS', 'ACCOUNTABILITY',
+            'TRANSPARENCY', 'FAIRNESS', 'EXPLAINABLE AI', 'XAI', 'REINFORCEMENT LEARNING', 'GAN',
+            'NEURAL NETWORKS', 'CONVOLUTIONAL NEURAL NETWORKS', 'CNN', 'RECURRENT NEURAL NETWORKS',
+            'RNN', 'LSTM', 'GRU', 'TRANSFER LEARNING', 'UNSUPERVISED LEARNING', 'SUPERVISED LEARNING',
+            'REINFORCEMENT LEARNING', 'SEMISUPERVISED LEARNING', 'ACTIVE LEARNING', 'ONLINE LEARNING',
+            'BATCH LEARNING', 'ENSEMBLE LEARNING', 'BOOSTING', 'BAGGING', 'RANDOM FOREST', 'SUPPORT VECTOR MACHINE',
+            'SVM', 'DECISION TREE', 'NAIVE BAYES', 'K NEAREST NEIGHBORS', 'KMEANS', 'DIMENSIONALITY REDUCTION',
+            'PCA', 'SVD', 'CLUSTERING', 'REGRESSION', 'CLASSIFICATION', 'FEATURE ENGINEERING', 'MODEL TRAINING',
+            'MODEL EVALUATION', 'HYPERPARAMETER TUNING', 'OVERFITTING', 'UNDERFITTING', 'BIAS VARIANCE TRADEOFF',
+            'CROSS VALIDATION', 'GRID SEARCH', 'RANDOM SEARCH', 'BAYESIAN OPTIMIZATION', 'NEURAL ARCHITECTURE SEARCH',
+            'NAS', 'AUTONOMOUS VEHICLES', 'SMART CITIES', 'SMART HOMES', 'PRECISION AGRICULTURE', 'DIGITAL HEALTH',
+            'TELEMEDICINE', 'REMOTE MONITORING', 'WEARABLE DEVICES', 'BIOMETRICS', 'GENOMICS', 'PROTEOMICS',
+            'METABOLOMICS', 'PHARMACOGENOMICS', 'BIOINFORMATICS', 'HEALTHCARE IT', 'ELECTRONIC HEALTH RECORDS',
+            'EHR', 'INTEROPERABILITY', 'HL7', 'FHIR', 'DICOM', 'PACs', 'RIS', 'LIS', 'E PRESCRIPTION',
+            'CLINICAL DECISION SUPPORT', 'CDS', 'TELEHEALTH', 'REMOTE SURGERY', 'ROBOTIC SURGERY',
+            'MEDICAL IMAGING', 'RADIOLOGY', 'PATHOLOGY', 'LABORATORY INFORMATION SYSTEM', 'LIS',
+            'CLINICAL TRIALS', 'DRUG DISCOVERY', 'PHARMACEUTICALS', 'BIOPHARMACEUTICALS', 'GENE THERAPY',
+            'CELL THERAPY', 'VACCINES', 'BIOLOGICS', 'MEDICAL DEVICES', 'DIAGNOSTICS', 'THERAPEUTICS',
+            'PREVENTIVE MEDICINE', 'PUBLIC HEALTH', 'EPIDEMIOLOGY', 'BIOSTATISTICS', 'HEALTH ECONOMICS',
+            'HEALTH POLICY', 'HEALTH MANAGEMENT', 'HEALTHCARE ADMINISTRATION', 'HOSPITAL MANAGEMENT',
+            'NURSING INFORMATICS', 'MEDICAL INFORMATICS', 'HEALTH INFORMATICS', 'CLINICAL INFORMATICS',
+            'POPULATION HEALTH', 'VALUE BASED CARE', 'ACCOUNTABLE CARE ORGANIZATIONS', 'ACO',
+            'PATIENT CENTERED CARE', 'PCC', 'SHARED DECISION MAKING', 'SDM', 'HEALTH LITERACY',
+            'PATIENT ENGAGEMENT', 'CONSUMER HEALTH INFORMATICS', 'CHIN', 'GLOBAL HEALTH', 'ONE HEALTH',
+            'ENVIRONMENTAL HEALTH', 'OCCUPATIONAL HEALTH', 'TRAVEL HEALTH', 'HEALTH EQUITY',
+            'SOCIAL DETERMINANTS OF HEALTH', 'HEALTH DISPARITIES', 'HEALTH OUTCOMES', 'QUALITY OF CARE',
+            'PATIENT SAFETY', 'MEDICAL ERROR', 'ADVERSE EVENTS', 'SENTINEL EVENTS', 'ROOT CAUSE ANALYSIS',
+            'FAILURE MODE AND EFFECTS ANALYSIS', 'FMEA', 'SIX SIGMA IN HEALTHCARE', 'LEAN HEALTHCARE',
+            'CONTINUOUS QUALITY IMPROVEMENT', 'CQI', 'TOTAL QUALITY MANAGEMENT', 'TQM', 'JOINT COMMISSION',
+            'CMS', 'CDC', 'WHO', 'NIH', 'FDA', 'EMA', 'GCP', 'GLP', 'GMP', 'GDP', 'HIPAA COMPLIANCE',
+            'GDPR COMPLIANCE', 'FDA REGULATIONS', 'ISO STANDARDS', 'CLINICAL GUIDELINES', 'BEST PRACTICES',
+            'EVIDENCE BASED MEDICINE', 'EBM', 'CLINICAL PATHWAYS', 'PROTOCOL', 'ALGORITHM', 'DECISION TREES',
+            'EXPERT SYSTEMS', 'KNOWLEDGE BASED SYSTEMS', 'ARTIFICIAL INTELLIGENCE IN HEALTHCARE',
+            'MACHINE LEARNING IN HEALTHCARE', 'DEEP LEARNING IN HEALTHCARE', 'NATURAL LANGUAGE PROCESSING IN HEALTHCARE',
+            'COMPUTER VISION IN HEALTHCARE', 'ROBOTICS IN HEALTHCARE', 'AUGMENTED REALITY IN HEALTHCARE',
+            'VIRTUAL REALITY IN HEALTHCARE', 'INTERNET OF MEDICAL THINGS', 'IOMT', 'BLOCKCHAIN IN HEALTHCARE',
+            'CYBERSECURITY IN HEALTHCARE', 'DATA PRIVACY IN HEALTHCARE', 'HEALTHCARE ANALYTICS',
+            'HEALTHCARE DATA SCIENCE', 'TELEMEDICINE PLATFORMS', 'REMOTE PATIENT MONITORING SYSTEMS',
+            'WEARABLE MEDICAL DEVICES', 'DIGITAL THERAPEUTICS', 'AI POWERED DIAGNOSTICS', 'ROBOT ASSISTED SURGERY',
+            'DRUG DISCOVERY PLATFORMS', 'PRECISION MEDICINE', 'GENOMIC MEDICINE', 'PERSONALIZED MEDICINE',
+            'POPULATION GENOMICS', 'BIOINFORMATICS TOOLS', 'HEALTHCARE CLOUD COMPUTING', 'HEALTHCARE CYBERSECURITY',
+            'MEDICAL DEVICE SECURITY', 'ELECTRONIC HEALTH RECORD SECURITY', 'TELEHEALTH SECURITY',
+            'REMOTE WORK SECURITY', 'CLOUD SECURITY', 'DATA ENCRYPTION', 'ACCESS CONTROL', 'AUDIT TRAILS',
+            'INCIDENT RESPONSE', 'DISASTER RECOVERY', 'BUSINESS CONTINUITY', 'RISK MANAGEMENT',
+            'COMPLIANCE MANAGEMENT', 'REGULATORY AFFAIRS', 'QUALITY ASSURANCE', 'QUALITY CONTROL',
+            'CLINICAL RESEARCH', 'EPIDEMIOLOGICAL STUDIES', 'PUBLIC HEALTH SURVEILLANCE', 'DISEASE PREVENTION',
+            'HEALTH PROMOTION', 'HEALTH EDUCATION', 'HEALTH LITERACY PROGRAMS', 'PATIENT ADVOCACY',
+            'COMMUNITY HEALTH WORKERS', 'SOCIAL SUPPORT', 'MENTAL HEALTH SERVICES', ''
+        ];
+        let hangmanWordToGuess;
+        let hangmanGuessedLetters;
+        let hangmanAttemptsLeft;
+        const hangmanMaxAttempts = 6;
+        let hangmanFigureState = 0;
+
+        const hangmanFigureParts = [
+            `
+  +---+
+  |   |
+      |
+      |
+      |
+      |
+=========\n`,
+            `
+  +---+
+  |   |
+  O   |
+      |
+      |
+      |
+=========\n`,
+            `
+  +---+
+  |   |
+  O   |
+  |   |
+      |
+      |
+=========\n`,
+            `
+  +---+
+  |   |
+  O   |
+ /|   |
+      |
+      |
+=========\n`,
+            `
+  +---+
+  |   |
+  O   |
+ /|\\  |
+      |
+      |
+=========\n`,
+            `
+  +---+
+  |   |
+  O   |
+ /|\\  |
+ /    |
+      |
+=========\n`,
+            `
+  +---+
+  |   |
+  O   |
+ /|\\  |
+ / \\  |
+      |
+=========\n`
+        ];
+
+
+        function createHangmanGame() {
+            gameContent.innerHTML = `
+                <div id="hangman-game">
+                    <pre id="hangman-figure">${hangmanFigureParts[0]}</pre>
+                    <p id="hangman-display"></p>
+                    <p id="hangman-guessed-letters">Letras adivinadas: </p>
+                    <p id="hangman-attempts">Intentos restantes: <span id="hangman-attempts-count"></span></p>
+                    <div id="hangman-input">
+                        <input type="text" id="hangman-guess-input" class="game-input" maxlength="1" pattern="[A-Za-z]" onkeyup="this.value = this.value.toUpperCase()">
+                        <button class="game-button" onclick="checkHangmanGuess()">Adivinar</button>
+                    </div>
+                </div>
+            `;
+            initializeHangmanGame();
+            currentGame = {
+                name: 'hangman',
+                reset: initializeHangmanGame,
+                cleanup: () => { /* No specific cleanup */ }
+            };
+        }
+
+        function initializeHangmanGame() {
+            hangmanWordToGuess = hangmanWords[Math.floor(Math.random() * hangmanWords.length)];
+            hangmanGuessedLetters = [];
+            hangmanAttemptsLeft = hangmanMaxAttempts;
+            hangmanFigureState = 0;
+
+            document.getElementById('hangman-display').textContent = '_ '.repeat(hangmanWordToGuess.length);
+            document.getElementById('hangman-guessed-letters').textContent = 'Letras adivinadas: ';
+            document.getElementById('hangman-attempts-count').textContent = hangmanAttemptsLeft;
+            document.getElementById('hangman-guess-input').value = '';
+            document.getElementById('hangman-figure').textContent = hangmanFigureParts[hangmanFigureState];
+            gameMessage.textContent = '¡Adivina la palabra!';
+            resetButton.style.display = 'none';
+            enableHangmanInput();
+        }
+
+        function checkHangmanGuess() {
+            const guessInput = document.getElementById('hangman-guess-input');
+            const guess = guessInput.value.toUpperCase();
+            guessInput.value = '';
+
+            if (!guess.match(/^[A-Z]$/)) {
+                gameMessage.textContent = 'Por favor, ingresa una sola letra válida (A-Z).';
+                return;
+            }
+            if (hangmanGuessedLetters.includes(guess)) {
+                gameMessage.textContent = `Ya adivinaste la letra '${guess}'.`;
+                return;
+            }
+
+            hangmanGuessedLetters.push(guess);
+            document.getElementById('hangman-guessed-letters').textContent = 'Letras adivinadas: ' + hangmanGuessedLetters.join(', ');
+
+            let found = false;
+            let displayWord = '';
+            for (let i = 0; i < hangmanWordToGuess.length; i++) {
+                if (hangmanGuessedLetters.includes(hangmanWordToGuess[i])) {
+                    displayWord += hangmanWordToGuess[i] + ' ';
+                    if (hangmanWordToGuess[i] === guess) found = true;
+                } else {
+                    displayWord += '_ ';
+                }
+            }
+            document.getElementById('hangman-display').textContent = displayWord;
+
+            if (!found) {
+                hangmanAttemptsLeft--;
+                hangmanFigureState = Math.min(hangmanFigureState + 1, hangmanMaxAttempts); // Asegurar que no exceda el máximo
+                document.getElementById('hangman-attempts-count').textContent = hangmanAttemptsLeft;
+                document.getElementById('hangman-figure').textContent = hangmanFigureParts[hangmanFigureState];
+                gameMessage.textContent = `¡Incorrecto! La letra '${guess}' no está en la palabra.`;
+            } else {
+                gameMessage.textContent = `¡Correcto! La letra '${guess}' está en la palabra.`;
+            }
+
+            checkHangmanWinLoss();
+        }
+
+        function checkHangmanWinLoss() {
+            const currentDisplay = document.getElementById('hangman-display').textContent.replace(/ /g, '');
+            if (currentDisplay === hangmanWordToGuess) {
+                gameMessage.textContent = `¡Felicidades! Adivinaste la palabra: ${hangmanWordToGuess}`;
+                disableHangmanInput();
+                resetButton.style.display = 'block';
+            } else if (hangmanAttemptsLeft <= 0) {
+                gameMessage.textContent = `¡Game Over! La palabra era: ${hangmanWordToGuess}`;
+                disableHangmanInput();
+                resetButton.style.display = 'block';
+            }
+        }
+
+        function disableHangmanInput() {
+            document.getElementById('hangman-guess-input').disabled = true;
+            document.getElementById('hangman-input').querySelector('button').disabled = true;
+        }
+        function enableHangmanInput() {
+            document.getElementById('hangman-guess-input').disabled = false;
+            document.getElementById('hangman-input').querySelector('button').disabled = false;
+        }
+
+
+        // --- Pong (mantener lógica anterior) ---
+        let pongCanvas, pongCtx;
+        const PONG_WIDTH = 600;
+        const PONG_HEIGHT = 400;
+        let pongBall, pongPlayer1, pongPlayer2;
+        let pongPlayer1Score, pongPlayer2Score;
+        let pongAnimationFrameId;
+
+        const PADDLE_WIDTH = 10;
+        const PADDLE_HEIGHT = 80;
+        const BALL_SIZE = 10;
+        const PADDLE_SPEED = 5;
+
+        function createPongGame() {
+            gameContent.innerHTML = `
+                <div id="pong-game">
+                    <canvas id="pong-canvas" width="${PONG_WIDTH}" height="${PONG_HEIGHT}"></canvas>
+                    <p>Jugador 1: <span id="pong-score1">0</span> | Jugador 2: <span id="pong-score2">0</span></p>
+                </div>
+            `;
+            pongCanvas = document.getElementById('pong-canvas');
+            pongCtx = pongCanvas.getContext('2d');
+
+            initializePongGame();
+            currentGame = {
+                name: 'pong',
+                reset: initializePongGame,
+                cleanup: () => {
+                    cancelAnimationFrame(pongAnimationFrameId);
+                    document.removeEventListener('keydown', handlePongKeyDown);
+                    document.removeEventListener('keyup', handlePongKeyUp);
+                }
+            };
+        }
+
+        function initializePongGame() {
+            pongPlayer1Score = 0;
+            pongPlayer2Score = 0;
+            document.getElementById('pong-score1').textContent = pongPlayer1Score;
+            document.getElementById('pong-score2').textContent = pongPlayer2Score;
+            gameMessage.textContent = '';
+            resetButton.style.display = 'none';
+
+            pongPlayer1 = { x: 0, y: PONG_HEIGHT / 2 - PADDLE_HEIGHT / 2, width: PADDLE_WIDTH, height: PADDLE_HEIGHT, dy: 0 };
+            pongPlayer2 = { x: PONG_WIDTH - PADDLE_WIDTH, y: PONG_HEIGHT / 2 - PADDLE_HEIGHT / 2, width: PADDLE_WIDTH, height: PADDLE_HEIGHT, dy: 0 };
+            resetPongBall();
+
+            if (pongAnimationFrameId) cancelAnimationFrame(pongAnimationFrameId);
+            document.removeEventListener('keydown', handlePongKeyDown);
+            document.removeEventListener('keyup', handlePongKeyUp);
+
+            document.addEventListener('keydown', handlePongKeyDown);
+            document.addEventListener('keyup', handlePongKeyUp);
+            pongGameLoop();
+        }
+
+        function resetPongBall() {
+            pongBall = {
+                x: PONG_WIDTH / 2,
+                y: PONG_HEIGHT / 2,
+                size: BALL_SIZE,
+                dx: (Math.random() > 0.5 ? 1 : -1) * (3 + Math.random() * 2),
+                dy: (Math.random() > 0.5 ? 1 : -1) * (3 + Math.random() * 2)
+            };
+        }
+
+        function drawPong() {
+            pongCtx.clearRect(0, 0, PONG_WIDTH, PONG_HEIGHT);
+            pongCtx.fillStyle = '#eee';
+
+            pongCtx.fillRect(pongPlayer1.x, pongPlayer1.y, pongPlayer1.width, pongPlayer1.height);
+            pongCtx.fillRect(pongPlayer2.x, pongPlayer2.y, pongPlayer2.width, pongPlayer2.height);
+
+            pongCtx.beginPath();
+            pongCtx.arc(pongBall.x, pongBall.y, pongBall.size / 2, 0, Math.PI * 2);
+            pongCtx.fill();
+        }
+
+        function updatePong() {
+            pongPlayer1.y += pongPlayer1.dy;
+            pongPlayer2.y += pongPlayer2.dy;
+
+            pongPlayer1.y = Math.max(0, Math.min(pongPlayer1.y, PONG_HEIGHT - pongPlayer1.height));
+            pongPlayer2.y = Math.max(0, Math.min(pongPlayer2.y, PONG_HEIGHT - pongPlayer2.height));
+
+            pongBall.x += pongBall.dx;
+            pongBall.y += pongBall.dy;
+
+            if (pongBall.y - pongBall.size / 2 < 0 || pongBall.y + pongBall.size / 2 > PONG_HEIGHT) {
+                pongBall.dy *= -1;
+            }
+
+            if (pongBall.x - pongBall.size / 2 < pongPlayer1.x + pongPlayer1.width &&
+                pongBall.y + pongBall.size / 2 > pongPlayer1.y &&
+                pongBall.y - pongBall.size / 2 < pongPlayer1.y + pongPlayer1.height) {
+                pongBall.dx *= -1;
+                pongBall.x = pongPlayer1.x + pongPlayer1.width + pongBall.size / 2;
+            }
+
+            if (pongBall.x + pongBall.size / 2 > pongPlayer2.x &&
+                pongBall.y + pongBall.size / 2 > pongPlayer2.y &&
+                pongBall.y - pongBall.size / 2 < pongPlayer2.y + pongPlayer2.height) {
+                pongBall.dx *= -1;
+                pongBall.x = pongPlayer2.x - pongBall.size / 2;
+            }
+
+            if (pongBall.x - pongBall.size / 2 < 0) {
+                pongPlayer2Score++;
+                document.getElementById('pong-score2').textContent = pongPlayer2Score;
+                resetPongBall();
+                if (pongPlayer2Score >= 5) {
+                    gameMessage.textContent = '¡Jugador 2 ha ganado!';
+                    endPongGame();
+                }
+            } else if (pongBall.x + pongBall.size / 2 > PONG_WIDTH) {
+                pongPlayer1Score++;
+                document.getElementById('pong-score1').textContent = pongPlayer1Score;
+                resetPongBall();
+                if (pongPlayer1Score >= 5) {
+                    gameMessage.textContent = '¡Jugador 1 ha ganado!';
+                    endPongGame();
+                }
+            }
+        }
+
+        function pongGameLoop() {
+            updatePong();
+            drawPong();
+            pongAnimationFrameId = requestAnimationFrame(pongGameLoop);
+        }
+
+        function handlePongKeyDown(event) {
+            switch (event.key) {
+                case 'w':
+                    pongPlayer1.dy = -PADDLE_SPEED;
+                    break;
+                case 's':
+                    pongPlayer1.dy = PADDLE_SPEED;
+                    break;
+                case 'ArrowUp':
+                    pongPlayer2.dy = -PADDLE_SPEED;
+                    break;
+                case 'ArrowDown':
+                    pongPlayer2.dy = PADDLE_SPEED;
+                    break;
+            }
+        }
+
+        function handlePongKeyUp(event) {
+            switch (event.key) {
+                case 'w':
+                case 's':
+                    pongPlayer1.dy = 0;
+                    break;
+                case 'ArrowUp':
+                case 'ArrowDown':
+                    pongPlayer2.dy = 0;
+                    break;
+            }
+        }
+
+        function endPongGame() {
+            cancelAnimationFrame(pongAnimationFrameId);
+            document.removeEventListener('keydown', handlePongKeyDown);
+            document.removeEventListener('keyup', handlePongKeyUp);
+            resetButton.style.display = 'block';
+        }
+
+
+        // --- Juego de Adivinanzas (Preguntas y Respuestas) ---
+        let currentQuizQuestions = [];
+        let currentQuestionIndex = 0;
+        let quizScore = 0;
+        let quizAttempts = 0;
+        let quizMode = '';
+
+        // Simulación de una base de datos de preguntas extensa
+        const allQuizQuestions = {
+            'ciencia': [
+                { question: '¿Cuál es el elemento químico más abundante en la corteza terrestre?', options: ['Oxígeno', 'Silicio', 'Aluminio', 'Hierro'], answer: 'Oxígeno' },
+                { question: '¿Qué planeta es conocido como el "Planeta Rojo"?', options: ['Júpiter', 'Marte', 'Venus', 'Saturno'], answer: 'Marte' },
+                { question: '¿Cuál es la fórmula química del agua?', options: ['CO2', 'O2', 'H2O', 'N2'], answer: 'H2O' },
+                { question: '¿Cuál es el proceso por el cual las plantas producen su propio alimento?', options: ['Respiración', 'Fermentación', 'Transpiración', 'Fotosíntesis'], answer: 'Fotosíntesis' },
+                { question: '¿Qué científico formuló la teoría de la relatividad?', options: ['Isaac Newton', 'Galileo Galilei', 'Albert Einstein', 'Stephen Hawking'], answer: 'Albert Einstein' },
+                { question: '¿Cuál es la unidad básica de la vida?', options: ['Tejido', 'Órgano', 'Célula', 'Molécula'], answer: 'Célula' },
+                { question: '¿Qué gas es indispensable para la respiración humana?', options: ['Dióxido de carbono', 'Nitrógeno', 'Oxígeno', 'Metano'], answer: 'Oxígeno' },
+                { question: '¿Cuál es la estrella más cercana a la Tierra?', options: ['Próxima Centauri', 'Sirio', 'El Sol', 'Alfa Centauri'], answer: 'El Sol' },
+                { question: '¿Qué tipo de energía se produce al dividir átomos?', options: ['Solar', 'Eólica', 'Nuclear', 'Geotérmica'], answer: 'Nuclear' },
+                { question: '¿Cuál es el hueso más largo del cuerpo humano?', options: ['Tibia', 'Fémur', 'Peroné', 'Húmero'], answer: 'Fémur' },
+                { question: '¿Qué capa de la atmósfera protege a la Tierra de la radiación ultravioleta?', options: ['Troposfera', 'Estratosfera', 'Mesosfera', 'Termosfera'], answer: 'Estratosfera' },
+                { question: '¿Cuál es el metal más abundante en la Tierra?', options: ['Hierro', 'Cobre', 'Oro', 'Aluminio'], answer: 'Aluminio' },
+                { question: '¿Cuál es el valor aproximado de Pi (π)?', options: ['3.14', '2.71', '1.61', '4.20'], answer: '3.14' },
+                { question: '¿Qué es un agujero negro?', options: ['Una estrella muy brillante', 'Una galaxia joven', 'Una región del espacio-tiempo donde la gravedad es tan fuerte que nada puede escapar', 'Un tipo de planeta gaseoso'], answer: 'Una región del espacio-tiempo donde la gravedad es tan fuerte que nada puede escapar' },
+                { question: '¿Qué instrumento se utiliza para medir la presión atmosférica?', options: ['Termómetro', 'Anemómetro', 'Barómetro', 'Higrómetro'], answer: 'Barómetro' },
+                { question: '¿Qué es el ADN?', options: ['Una proteína compleja', 'El material genético de los organismos vivos', 'Un tipo de azúcar', 'Un gas inerte'], answer: 'El material genético de los organismos vivos' },
+                { question: '¿Qué animal es el más grande del mundo?', options: ['Elefante africano', 'Ballena azul', 'Jirafa', 'Oso polar'], answer: 'Ballena azul' },
+                { question: '¿Cuál es la fuerza que atrae los objetos hacia el centro de la Tierra?', options: ['Fricción', 'Gravedad', 'Magnetismo', 'Tensión'], answer: 'Gravedad' },
+                { question: '¿Qué produce el calor y la luz en el Sol?', options: ['Combustión de hidrógeno', 'Reacciones nucleares de fusión', 'Quema de carbón', 'Erupciones volcánicas'], answer: 'Reacciones nucleares de fusión' },
+                { question: '¿Cuál es el proceso por el cual el agua cambia de estado líquido a gaseoso?', options: ['Condensación', 'Fusión', 'Sublimación', 'Evaporación'], answer: 'Evaporación' },
+                { question: '¿Qué es la Vía Láctea?', options: ['Un tipo de chocolate', 'La galaxia donde se encuentra nuestro sistema solar', 'Un camino en el cielo', 'Una constelación'], answer: 'La galaxia donde se encuentra nuestro sistema solar' },
+                { question: '¿Cuál es el gas más abundante en la atmósfera terrestre?', options: ['Oxígeno', 'Dióxido de carbono', 'Argón', 'Nitrógeno'], answer: 'Nitrógeno' },
+                { question: '¿Qué parte de la célula es responsable de la producción de energía?', options: ['Núcleo', 'Ribosoma', 'Mitocondria', 'Vacuola'], answer: 'Mitocondria' },
+                { question: '¿Qué es un eclipse solar?', options: ['La Luna oculta al Sol', 'La Tierra oculta al Sol', 'El Sol oculta a la Luna', 'Un fenómeno meteorológico'], answer: 'La Luna oculta al Sol' },
+                { question: '¿Qué tipo de sangre es considerada el "donante universal"?', options: ['A+', 'B-', 'AB+', 'O-'], answer: 'O-' }
+            ],
+            'historia': [
+                { question: '¿Quién fue el primer presidente de los Estados Unidos?', options: ['Thomas Jefferson', 'Abraham Lincoln', 'George Washington', 'Benjamin Franklin'], answer: 'George Washington' },
+                { question: '¿En qué año llegó Cristóbal Colón a América?', options: ['1482', '1492', '1502', '1512'], answer: '1492' },
+                { question: '¿Quién pintó la Mona Lisa?', options: ['Vincent van Gogh', 'Pablo Picasso', 'Leonardo da Vinci', 'Claude Monet'], answer: 'Leonardo da Vinci' },
+                { question: '¿Qué imperio construyó las pirámides de Giza?', options: ['Romano', 'Griego', 'Egipcio', 'Persa'], answer: 'Egipcio' },
+                { question: '¿En qué guerra se utilizó por primera vez la bomba atómica?', options: ['Primera Guerra Mundial', 'Guerra Civil Española', 'Segunda Guerra Mundial', 'Guerra de Corea'], answer: 'Segunda Guerra Mundial' },
+                { question: '¿Quién fue el líder de la Unión Soviética durante la Segunda Guerra Mundial?', options: ['Vladimir Lenin', 'Nikita Jruschov', 'Mijaíl Gorbachov', 'Iósif Stalin'], answer: 'Iósif Stalin' },
+                { question: '¿Qué evento marcó el inicio de la Revolución Francesa?', options: ['La Declaración de Independencia', 'La toma de la Bastilla', 'La ejecución de Luis XVI', 'La Batalla de Waterloo'], answer: 'La toma de la Bastilla' },
+                { question: '¿Quién fue el primer emperador romano?', options: ['Julio César', 'Nerón', 'Augusto', 'Calígula'], answer: 'Augusto' },
+                { question: '¿Qué civilización desarrolló el concepto de "cero"?', options: ['Egipcia', 'Griega', 'Romana', 'Maya'], answer: 'Maya' },
+                { question: '¿En qué ciudad se firmó el Tratado de Versalles, que puso fin a la Primera Guerra Mundial?', options: ['París', 'Berlín', 'Londres', 'Versalles'], answer: 'Versalles' },
+                { question: '¿Quién escribió "Don Quijote de la Mancha"?', options: ['Gabriel García Márquez', 'Federico García Lorca', 'Miguel de Cervantes', 'Jorge Luis Borges'], answer: 'Miguel de Cervantes' },
+                { question: '¿Qué país fue el primero en enviar un hombre al espacio?', options: ['Estados Unidos', 'Unión Soviética', 'China', 'Alemania'], answer: 'Unión Soviética' },
+                { question: '¿Quién fue el líder del movimiento por los derechos civiles en Estados Unidos?', options: ['Malcolm X', 'Rosa Parks', 'Martin Luther King Jr.', 'Nelson Mandela'], answer: 'Martin Luther King Jr.' },
+                { question: '¿Qué antigua ciudad fue sepultada por la erupción del Vesubio?', options: ['Roma', 'Atenas', 'Pompeya', 'Cartago'], answer: 'Pompeya' },
+                { question: '¿Qué se conmemora el 12 de octubre en muchos países de América?', options: ['Día de la Independencia', 'Día de la Raza', 'Día del Trabajo', 'Día de la Bandera'], answer: 'Día de la Raza' },
+                { question: '¿Quién fue el primer faraón de Egipto unificado?', options: ['Tutankamón', 'Ramsés II', 'Narmer', 'Cleopatra'], answer: 'Narmer' },
+                { question: '¿Qué personaje histórico es conocido por haber cruzado los Alpes con elefantes?', options: ['Alejandro Magno', 'Julio César', 'Aníbal Barca', 'Napoleón Bonaparte'], answer: 'Aníbal Barca' },
+                { question: '¿Cuál fue la capital del Imperio Bizantino?', options: ['Roma', 'Atenas', 'Constantinopla', 'Alejandría'], answer: 'Constantinopla' },
+                { question: '¿Qué gran muralla fue construida para proteger un imperio?', options: ['La Gran Muralla China', 'El Muro de Adriano', 'El Muro de Berlín', 'La Muralla de Ávila'], answer: 'La Gran Muralla China' },
+                { question: '¿Quién fue la reina que gobernó Egipto y tuvo relaciones con Julio César y Marco Antonio?', options: ['Nefertiti', 'Hatshepsut', 'Cleopatra VII', 'Isis'], answer: 'Cleopatra VII' },
+                { question: '¿En qué año se disolvió la Unión Soviética?', options: ['1989', '1991', '1995', '2001'], answer: '1991' },
+                { question: '¿Quién fue el autor de "El Manifiesto Comunista"?', options: ['Lenin', 'Stalin', 'Mao Zedong', 'Karl Marx'], answer: 'Karl Marx' },
+                { question: '¿Qué país inició la tradición de los Juegos Olímpicos?', options: ['Roma', 'Egipto', 'Grecia', 'China'], answer: 'Grecia' },
+                { question: '¿Quién fue la joven judía que escribió un diario durante la Segunda Guerra Mundial?', options: ['Miep Gies', 'Corrie ten Boom', 'Irena Sendler', 'Ana Frank'], answer: 'Ana Frank' },
+                { question: '¿Qué hecho histórico se conoce como el "Descubrimiento de América"?', options: ['La llegada de los vikingos a Terranova', 'La expedición de Fernando de Magallanes', 'La llegada de Cristóbal Colón a las Bahamas', 'La circunnavegación de Juan Sebastián Elcano'], answer: 'La llegada de Cristóbal Colón a las Bahamas' }
+            ],
+            'cultura_general': [
+                { question: '¿Cuál es la capital de Francia?', options: ['Londres', 'Roma', 'Berlín', 'París'], answer: 'París' },
+                { question: '¿Cuántos continentes hay en la Tierra?', options: ['5', '6', '7', '8'], answer: '7' },
+                { question: '¿Cuál es el océano más grande del mundo?', options: ['Atlántico', 'Índico', 'Ártico', 'Pacífico'], answer: 'Pacífico' },
+                { question: '¿Cuál es el río más largo del mundo?', options: ['Nilo', 'Amazonas', 'Yangtsé', 'Misisipi'], answer: 'Amazonas' },
+                { question: '¿Qué animal es el rey de la selva?', options: ['Tigre', 'Oso', 'León', 'Elefante'], answer: 'León' },
+                { question: '¿Cuál es el deporte más popular del mundo?', options: ['Baloncesto', 'Tenis', 'Fútbol', 'Béisbol'], answer: 'Fútbol' },
+                { question: '¿Qué país es famoso por sus tulipanes y molinos de viento?', options: ['Alemania', 'Bélgica', 'Países Bajos', 'Dinamarca'], answer: 'Países Bajos' },
+                { question: '¿Qué es el sushi?', options: ['Un plato de pasta italiano', 'Un tipo de pan', 'Un plato japonés a base de arroz y pescado', 'Una bebida alcohólica'], answer: 'Un plato japonés a base de arroz y pescado' },
+                { question: '¿Cuál es la montaña más alta del mundo?', options: ['K2', 'Monte Everest', 'Kangchenjunga', 'Lhotse'], answer: 'Monte Everest' },
+                { question: '¿Cuántos huesos tiene el cuerpo humano adulto?', options: ['206', '300', '150', '250'], answer: '206' },
+                { question: '¿Cuál es el idioma más hablado en el mundo (nativos)?', options: ['Inglés', 'Español', 'Mandarín', 'Hindi'], answer: 'Mandarín' },
+                { question: '¿Qué animal pone los huevos más grandes?', options: ['Gallina', 'Avestruz', 'Pato', 'Pingüino'], answer: 'Avestruz' },
+                { question: '¿Cuál es la capital de Australia?', options: ['Sídney', 'Melbourne', 'Canberra', 'Brisbane'], answer: 'Canberra' },
+                { question: '¿Qué fruta es famosa por ser la "reina de las frutas"?', options: ['Manzana', 'Uva', 'Mango', 'Durian'], answer: 'Durian' },
+                { question: '¿Qué es un koala?', options: ['Un tipo de oso', 'Un marsupial australiano', 'Un felino salvaje', 'Un ave exótica'], answer: 'Un marsupial australiano' },
+                { question: '¿Qué es la ópera?', options: ['Un género musical instrumental', 'Una obra de teatro con música y canto', 'Un tipo de baile moderno', 'Un estilo de pintura'], answer: 'Una obra de teatro con música y canto' },
+                { question: '¿Cuál es el libro más vendido de la historia?', options: ['El Quijote', 'Harry Potter', 'La Biblia', 'El Señor de los Anillos'], answer: 'La Biblia' },
+                { question: '¿Qué famosa estructura fue construida para proteger a China de los invasores?', options: ['La Gran Muralla China', 'La Ciudad Prohibida', 'El Templo del Cielo', 'Los Guerreros de Terracota'], answer: 'La Gran Muralla China' },
+                { question: '¿Cuál es la ciudad conocida como "La Ciudad Eterna"?', options: ['París', 'Atenas', 'Roma', 'Londres'], answer: 'Roma' },
+                { question: '¿Qué es la salsa?', options: ['Un tipo de condimento picante', 'Un género musical y baile caribeño', 'Una técnica de cocina', 'Un tipo de verdura'], answer: 'Un género musical y baile caribeño' },
+                { question: '¿Cuál es el país más grande del mundo por superficie?', options: ['China', 'Canadá', 'Estados Unidos', 'Rusia'], answer: 'Rusia' },
+                { question: '¿Cuántos días tiene un año bisiesto?', options: ['365', '366', '364', '367'], answer: '366' },
+                { question: '¿Qué es la Torre Eiffel?', options: ['Un faro', 'Una antena de radio', 'Un monumento y torre de observación en París', 'Una fortaleza'], answer: 'Un monumento y torre de observación en París' },
+                { question: '¿Cuál es el animal terrestre más rápido?', options: ['León', 'Gacela', 'Guepardo', 'Caballo'], answer: 'Guepardo' },
+                { question: '¿Qué tipo de instrumento musical es una trompeta?', options: ['Cuerda', 'Percusión', 'Viento-madera', 'Viento-metal'], answer: 'Viento-metal' }
+            ],
+            'cine_series': [
+                { question: '¿Quién dirigió la película "Titanic"?', options: ['Steven Spielberg', 'James Cameron', 'George Lucas', 'Christopher Nolan'], answer: 'James Cameron' },
+                { question: '¿Cuál es el nombre del protagonista de "Harry Potter"?', options: ['Ron Weasley', 'Albus Dumbledore', 'Severus Snape', 'Harry Potter'], answer: 'Harry Potter' },
+                { question: '¿Qué serie de televisión transcurre en Westeros?', options: ['The Witcher', 'Vikingos', 'Game of Thrones', 'El Señor de los Anillos: Los Anillos de Poder'], answer: 'Game of Thrones' },
+                { question: '¿Cuál es el actor que interpreta a Iron Man en el MCU?', options: ['Chris Evans', 'Chris Hemsworth', 'Mark Ruffalo', 'Robert Downey Jr.'], answer: 'Robert Downey Jr.' },
+                { question: '¿En qué ciudad se ambienta la serie "Friends"?', options: ['Los Ángeles', 'Chicago', 'Nueva York', 'Miami'], answer: 'Nueva York' },
+                { question: '¿Qué película ganó el Oscar a Mejor Película en 2020?', options: ['1917', 'Joker', 'Parásitos', 'Once Upon a Time in Hollywood'], answer: 'Parásitos' },
+                { question: '¿Quién es el creador de "Los Simpson"?', options: ['Seth MacFarlane', 'Matt Groening', 'Mike Judge', 'Trey Parker'], answer: 'Matt Groening' },
+                { question: '¿Cuál es el nombre del perro de Scooby-Doo?', options: ['Scrappy-Doo', 'Marmaduke', 'Astro', 'Scooby-Doo'], answer: 'Scooby-Doo' },
+                { question: '¿Qué actriz interpretó a Hermione Granger en las películas de Harry Potter?', options: ['Bonnie Wright', 'Evanna Lynch', 'Emma Watson', 'Katie Leung'], answer: 'Emma Watson' },
+                { question: '¿En qué año se estrenó la primera película de "Star Wars"?', options: ['1975', '1977', '1980', '1983'], answer: '1977' },
+                { question: '¿Quién es el villano principal en la saga de "El Señor de los Anillos"?', options: ['Saruman', 'Gollum', 'Sauron', 'Balrog'], answer: 'Sauron' },
+                { question: '¿Qué estudio de animación creó "Toy Story"?', options: ['DreamWorks Animation', 'Illumination', 'Studio Ghibli', 'Pixar'], answer: 'Pixar' },
+                { question: '¿Cuál es el nombre del detective consultor en la serie "Sherlock" (BBC)?', options: ['John Watson', 'Mycroft Holmes', 'Jim Moriarty', 'Sherlock Holmes'], answer: 'Sherlock Holmes' },
+                { question: '¿Quién es el actor protagonista de la saga "Piratas del Caribe"?', options: ['Orlando Bloom', 'Johnny Depp', 'Keira Knightley', 'Geoffrey Rush'], answer: 'Johnny Depp' },
+                { question: '¿Qué director es conocido por películas como "Pulp Fiction" y "Kill Bill"?', options: ['Martin Scorsese', 'Quentin Tarantino', 'Francis Ford Coppola', 'Stanley Kubrick'], answer: 'Quentin Tarantino' },
+                { question: '¿Qué serie animada presenta a un científico loco y su nieto?', options: ['Futurama', 'BoJack Horseman', 'Rick and Morty', 'Family Guy'], answer: 'Rick and Morty' },
+                { question: '¿Cuál es el nombre del barco del Capitán Jack Sparrow?', options: ['La Perla Blanca', 'El Holandés Errante', 'La Perla Negra', 'El Vengador'], answer: 'La Perla Negra' },
+                { question: '¿Qué película comienza con la famosa frase "May the Force be with you"?', options: ['Star Trek', 'Dune', 'Star Wars: A New Hope', 'Blade Runner'], answer: 'Star Wars: A New Hope' },
+                { question: '¿Quién es la actriz que interpreta a Eleven en "Stranger Things"?', options: ['Sadie Sink', 'Winona Ryder', 'Natalia Dyer', 'Millie Bobby Brown'], answer: 'Millie Bobby Brown' },
+                { question: '¿Cuál es la casa de Hogwarts a la que pertenece Harry Potter?', options: ['Slytherin', 'Hufflepuff', 'Ravenclaw', 'Gryffindor'], answer: 'Gryffindor' },
+                { question: '¿Qué película es famosa por la frase "Houston, we have a problem"?', options: ['Gravity', 'Apollo 13', 'Interstellar', 'First Man'], answer: 'Apollo 13' },
+                { question: '¿Quién compuso la banda sonora de muchas películas de Disney, incluyendo "El Rey León"?', options: ['John Williams', 'Hans Zimmer', 'Ennio Morricone', 'Danny Elfman'], answer: 'Hans Zimmer' },
+                { question: '¿Qué serie de televisión narra la historia de un profesor de química que se convierte en narcotraficante?', options: ['Ozark', 'Narcos', 'Breaking Bad', 'The Wire'], answer: 'Breaking Bad' },
+                { question: '¿Cuál es el nombre del androide en "Star Wars" que dice "I am your father"?', options: ['R2-D2', 'C-3PO', 'BB-8', 'Darth Vader (es un cyborg)'], answer: 'Darth Vader (es un cyborg)' }, // Trick question!
+                { question: '¿Qué actor protagoniza la saga de "Bourne"?', options: ['Tom Cruise', 'Jason Statham', 'Matt Damon', 'Jeremy Renner'], answer: 'Matt Damon' }
+            ],
+            'deportes': [
+                { question: '¿Cuántos jugadores tiene un equipo de fútbol en el campo?', options: ['9', '10', '11', '12'], answer: '11' },
+                { question: '¿Qué país ganó la Copa Mundial de Fútbol en 2022?', options: ['Brasil', 'Alemania', 'Francia', 'Argentina'], answer: 'Argentina' },
+                { question: '¿Cuántos puntos vale un touchdown en fútbol americano?', options: ['3', '6', '7', '1'], answer: '6' },
+                { question: '¿En qué deporte se utiliza un "birdie" y un "eagle"?', options: ['Tenis', 'Golf', 'Bádminton', 'Bolos'], answer: 'Golf' },
+                { question: '¿Qué nadador olímpico tiene el récord de más medallas de oro?', options: ['Usain Bolt', 'Michael Phelps', 'Simone Biles', 'Roger Federer'], answer: 'Michael Phelps' },
+                { question: '¿Qué país es el campeón actual de la NBA (temporada 2023-2024)?', options: ['Boston Celtics', 'Denver Nuggets', 'Los Angeles Lakers', 'Golden State Warriors'], answer: 'Boston Celtics' }, // Assuming this answer is up to date in mid-2025
+                { question: '¿Cuál es el nombre del torneo de tenis más antiguo del mundo?', options: ['Roland Garros', 'US Open', 'Abierto de Australia', 'Wimbledon'], answer: 'Wimbledon' },
+                { question: '¿Qué arte marcial es conocido por sus patadas altas?', options: ['Judo', 'Karate', 'Taekwondo', 'Aikido'], answer: 'Taekwondo' },
+                { question: '¿Cuántos aros tiene la bandera olímpica?', options: ['4', '5', '6', '7'], answer: '5' },
+                { question: '¿Qué deporte se practica en la Fórmula 1?', options: ['Ciclismo', 'Automovilismo', 'Motociclismo', 'Natación'], answer: 'Automovilismo' },
+                { question: '¿Qué equipo de fútbol tiene más Ligas de Campeones de la UEFA?', options: ['FC Barcelona', 'Bayern Múnich', 'Real Madrid', 'Liverpool FC'], answer: 'Real Madrid' },
+                { question: '¿Qué jugador es conocido como "La Pulga" en el fútbol?', options: ['Cristiano Ronaldo', 'Neymar Jr.', 'Lionel Messi', 'Kylian Mbappé'], answer: 'Lionel Messi' },
+                { question: '¿En qué deporte se utiliza una raqueta y una pelota con plumas?', options: ['Tenis', 'Tenis de mesa', 'Bádminton', 'Squash'], answer: 'Bádminton' },
+                { question: '¿Cuántos puntos se necesitan para ganar un set en voleibol (con diferencia de 2)?', options: ['21', '25', '20', '30'], answer: '25' },
+                { question: '¿Qué país ha ganado más Mundiales de Rugby?', options: ['Nueva Zelanda', 'Australia', 'Inglaterra', 'Sudáfrica'], answer: 'Sudáfrica' },
+                { question: '¿Cuál es el nombre del estadio donde juega el FC Barcelona?', options: ['Santiago Bernabéu', 'Wanda Metropolitano', 'Camp Nou', 'Anfield'], answer: 'Camp Nou' },
+                { question: '¿Qué deporte se practica en la Copa Ryder?', options: ['Tenis', 'Golf', 'Fútbol', 'Baloncesto'], answer: 'Golf' },
+                { question: '¿Cuántas bases hay en un campo de béisbol?', options: ['2', '3', '4', '5'], answer: '4' },
+                { question: '¿Qué atleta es famoso por romper el récord mundial de salto de longitud en 1991?', options: ['Carl Lewis', 'Jesse Owens', 'Bob Beamon', 'Mike Powell'], answer: 'Mike Powell' },
+                { question: '¿En qué deporte se usa un "puck"?', options: ['Fútbol', 'Baloncesto', 'Hockey sobre hielo', 'Golf'], answer: 'Hockey sobre hielo' },
+                { question: '¿Qué gimnasta es considerada la mejor de todos los tiempos?', options: ['Nadia Comăneci', 'Olga Korbut', 'Simone Biles', 'Larisa Latynina'], answer: 'Simone Biles' },
+                { question: '¿Qué país es el origen del boxeo?', options: ['Reino Unido', 'Estados Unidos', 'Grecia Antigua', 'Francia'], answer: 'Grecia Antigua' },
+                { question: '¿Cuántos jugadores hay en un equipo de baloncesto en la cancha?', options: ['4', '5', '6', '7'], answer: '5' },
+                { question: '¿Cuál es la distancia de un maratón (en kilómetros)?', options: ['21.0975 km', '42.195 km', '10 km', '100 km'], answer: '42.195 km' },
+                { question: '¿Qué futbolista es conocido como "O Rei"?', options: ['Diego Maradona', 'Johan Cruyff', 'Pelé', 'Franz Beckenbauer'], answer: 'Pelé' }
+            ]
+        };
+
+
+        function createGuessingGame() {
+            gameContent.innerHTML = `
+                <div id="guessing-game">
+                    <div id="guessing-modes">
+                        <button onclick="startQuizMode('ciencia')">Ciencia</button>
+                        <button onclick="startQuizMode('historia')">Historia</button>
+                        <button onclick="startQuizMode('cultura_general')">Cultura General</button>
+                        <button onclick="startQuizMode('cine_series')">Cine y Series</button>
+                        <button onclick="startQuizMode('deportes')">Deportes</button>
+                    </div>
+                    <p id="quiz-progress" style="display:none;"></p>
+                    <p id="quiz-question"></p>
+                    <div id="quiz-options"></div>
+                    <p id="quiz-feedback"></p>
+                    <p id="quiz-score"></p>
+                    <button id="next-question-button" class="game-button" onclick="loadNextQuizQuestion()">Siguiente Pregunta</button>
+                </div>
+            `;
+            // Ocultar elementos del quiz hasta que se elija un modo
+            document.getElementById('quiz-question').style.display = 'none';
+            document.getElementById('quiz-options').style.display = 'none';
+            document.getElementById('quiz-feedback').style.display = 'none';
+            document.getElementById('quiz-score').style.display = 'none';
+            document.getElementById('quiz-progress').style.display = 'none';
+
+            gameMessage.textContent = 'Selecciona un modo de juego para empezar.';
+            resetButton.style.display = 'none'; // El reinicio es para el modo de juego completo
+            currentGame = {
+                name: 'guessing',
+                reset: createGuessingGame, // Resetea a la selección de modo
+                cleanup: () => {
+                    // No hay intervalos o event listeners específicos que limpiar aquí
+                }
+            };
+        }
+
+        function startQuizMode(mode) {
+            quizMode = mode;
+            currentQuizQuestions = shuffle([...allQuizQuestions[mode]]); // Copia y baraja las preguntas del modo
+            currentQuestionIndex = 0;
+            quizScore = 0;
+            quizAttempts = 0;
+
+            // Ocultar la selección de modos
+            document.getElementById('guessing-modes').style.display = 'none';
+            // Mostrar elementos del quiz
+            document.getElementById('quiz-question').style.display = 'block';
+            document.getElementById('quiz-options').style.display = 'flex';
+            document.getElementById('quiz-feedback').style.display = 'block';
+            document.getElementById('quiz-score').style.display = 'block';
+            document.getElementById('quiz-progress').style.display = 'block';
+
+            gameMessage.textContent = ''; // Limpiar mensaje de selección
+            loadNextQuizQuestion();
+            resetButton.style.display = 'block'; // Ahora el botón de reinicio es para reiniciar el quiz actual
+        }
+
+        function loadNextQuizQuestion() {
+            document.getElementById('next-question-button').style.display = 'none';
+            document.getElementById('quiz-feedback').textContent = ''; // Limpiar feedback
+
+            if (currentQuestionIndex < currentQuizQuestions.length) {
+                const questionData = currentQuizQuestions[currentQuestionIndex];
+                document.getElementById('quiz-question').textContent = questionData.question;
+
+                const optionsContainer = document.getElementById('quiz-options');
+                optionsContainer.innerHTML = ''; // Limpiar opciones anteriores
+
+                // Barajar las opciones para que no siempre estén en el mismo orden
+                const shuffledOptions = shuffle([...questionData.options]);
+
+                shuffledOptions.forEach(option => {
+                    const button = document.createElement('button');
+                    button.classList.add('quiz-option-button');
+                    button.textContent = option;
+                    button.onclick = () => checkQuizAnswer(button, option, questionData.answer);
+                    optionsContainer.appendChild(button);
+                });
+
+                document.getElementById('quiz-progress').textContent = `Pregunta ${currentQuestionIndex + 1} de ${currentQuizQuestions.length}`;
+                document.getElementById('quiz-score').textContent = `Puntuación: ${quizScore}`;
+            } else {
+                endQuizGame();
+            }
+        }
+
+        function checkQuizAnswer(selectedButton, selectedOption, correctAnswer) {
+            // Deshabilitar todos los botones de opción para evitar múltiples clics
+            Array.from(document.getElementById('quiz-options').children).forEach(button => {
+                button.disabled = true;
+            });
+
+            if (selectedOption === correctAnswer) {
+                selectedButton.classList.add('correct');
+                quizScore += 10; // Puntos por respuesta correcta
+                document.getElementById('quiz-feedback').textContent = '¡Correcto!';
+            } else {
+                selectedButton.classList.add('incorrect');
+                document.getElementById('quiz-feedback').textContent = `Incorrecto. La respuesta correcta era: ${correctAnswer}`;
+                // Resaltar la respuesta correcta
+                Array.from(document.getElementById('quiz-options').children).forEach(button => {
+                    if (button.textContent === correctAnswer) {
+                        button.classList.add('correct');
+                    }
+                });
+            }
+
+            document.getElementById('quiz-score').textContent = `Puntuación: ${quizScore}`;
+            document.getElementById('next-question-button').style.display = 'block';
+            currentQuestionIndex++;
+        }
+
+        function endQuizGame() {
+            document.getElementById('quiz-question').textContent = '¡Quiz Terminado!';
+            document.getElementById('quiz-options').innerHTML = ''; // Limpiar opciones
+            document.getElementById('quiz-feedback').textContent = `Tu puntuación final es: ${quizScore} / ${currentQuizQuestions.length * 10}`;
+            document.getElementById('next-question-button').style.display = 'none';
+            document.getElementById('quiz-progress').style.display = 'none';
+            resetButton.style.display = 'block'; // Permite reiniciar el quiz o volver a modos
+            gameMessage.textContent = '¡Esperamos verte de nuevo!';
+        }
+
+
+        // --- Funciones de utilidad global ---
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex !== 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        // Initialize with main menu visible
+        backToMainMenu();
+    </script>
+</body>
+</html>
