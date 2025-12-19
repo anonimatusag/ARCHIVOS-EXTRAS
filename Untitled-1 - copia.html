@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digitalia - Tu Socio en Innovación Digital</title>
+    <meta name="description" content="Digitalia es una agencia de desarrollo web especializada en diseño estratégico, desarrollo frontend y backend, SEO y marketing digital. Transformamos tus ideas en soluciones web impactantes.">
+    <meta name="keywords" content="desarrollo web, diseño web, desarrollo frontend, desarrollo backend, SEO, marketing digital, agencias web, creación de sitios web">
+    <meta name="author" content="Digitalia Team">
+
+    <link rel="stylesheet" href="style.css"> <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0pReHqPZ+k7Uu21xK/X+eXQj/0B0t+v0H4A/D1X0g1eF/b/B2+w/yA8=" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+/* Variables CSS para temas y colores */
+:root {
+    /* Colores primarios y de acento */
+    --primary-color: #4A90E2; /* Azul brillante, profesional */
+    --primary-color-dark: #357ABD; /* Versión más oscura para hover */
+    --accent-color: #E27B4A; /* Naranja/terracota como acento */
+
+    /* Colores de texto */
+    --text-color-dark: #2C3E50; /* Azul oscuro para texto principal */
+    --text-color-light: #ECF0F1; /* Gris claro para texto en fondos oscuros */
+    --text-color-secondary: #7F8C8D; /* Gris suave para texto secundario */
+
+    /* Colores de fondo */
+    --background-color-light: #FFFFFF; /* Blanco puro */
+    --background-color-alt-light: #F8F9FA; /* Gris muy claro para secciones alternas */
+    --background-color-dark: #2C3E50; /* Azul oscuro para el tema oscuro */
+    --background-color-alt-dark: #34495E; /* Gris azulado oscuro para secciones alternas */
+
+    /* Sombras y bordes */
+    --box-shadow-light: rgba(0, 0, 0, 0.08); /* Sombra suave para elementos claros */
+    --box-shadow-hover-light: rgba(0, 0, 0, 0.15); /* Sombra al pasar el ratón */
+    --border-color-light: #E0E6EB; /* Borde sutil para elementos claros */
+
+    /* Header y Footer */
+    --header-bg-light: rgba(255, 255, 255, 0.95); /* Fondo del header translúcido */
+    --footer-bg-light: #2C3E50; /* Fondo del footer oscuro por defecto */
+    --footer-text-light: #ECF0F1; /* Texto del footer claro por defecto */
+    --footer-link-light: #9BB8DE; /* Enlaces del footer */
+
+    /* Fuentes */
+    --heading-font: 'Poppins', sans-serif;
+    --body-font: 'Open Sans', sans-serif; /* Cambiado a Open Sans como en el link */
+
+    /* Espaciado */
+    --section-padding: 8rem 2rem;
+}
+
+/* Tema oscuro */
+body.dark-theme {
+    --primary-color: #66B3FF;
+    --primary-color-dark: #4A90E2;
+    --accent-color: #FFC069;
+
+    --text-color-dark: #ECF0F1;
+    --text-color-light: #2C3E50;
+    --text-color-secondary: #BDC3C7;
+
+    --background-color-light: #212529; /* Negro muy oscuro */
+    --background-color-alt-light: #2C3E50; /* Azul oscuro para secciones alternas */
+    --background-color-dark: #ECF0F1;
+    --background-color-alt-dark: #DDE2E6;
+
+    --box-shadow-light: rgba(255, 255, 255, 0.1);
+    --box-shadow-hover-light: rgba(255, 255, 255, 0.2);
+    --border-color-light: #34495E;
+
+    --header-bg-light: rgba(33, 37, 41, 0.95);
+    --footer-bg-light: #212529;
+    --footer-text-light: #BDC3C7;
+    --footer-link-light: #8FBDE7;
+}
+
+/* Base global */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--body-font);
+    line-height: 1.7; /* Ligeramente más espaciado para mejor legibilidad */
+    color: var(--text-color-dark);
+    background-color: var(--background-color-light);
+    transition: background-color 0.5s ease, color 0.5s ease; /* Transición más suave para el tema */
+}
+
+a {
+    text-decoration: none;
+    color: var(--primary-color);
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--primary-color-dark);
+}
+
+ul {
+    list-style: none;
+}
+
+/* Encabezados */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--heading-font);
+    color: var(--text-color-dark);
+    line-height: 1.2;
+}
+
+/* Header y Navegación */
+.header {
+    background: var(--header-bg-light);
+    color: var(--text-color-dark);
+    padding: 1rem 0;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 20px var(--box-shadow-light); /* Sombra más definida */
+    backdrop-filter: blur(8px); /* Desenfoque más pronunciado */
+    transition: background 0.5s ease, box-shadow 0.5s ease;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1300px; /* Ancho ligeramente mayor */
+    margin: 0 auto;
+    padding: 0 2.5rem; /* Más padding horizontal */
+}
+
+.logo {
+    font-size: 2.2rem; /* Tamaño más grande */
+    font-weight: 800; /* Más peso para el logo */
+    color: var(--primary-color);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: transform 0.3s ease;
+}
+.logo:hover {
+    transform: scale(1.02);
+}
+
+.nav-links {
+    display: flex;
+}
+
+.nav-links li {
+    margin-left: 3rem; /* Más espacio entre enlaces */
+}
+
+.nav-links a {
+    color: var(--text-color-dark);
+    font-weight: 600;
+    font-size: 1.05rem;
+    padding: 0.5rem 0;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: var(--primary-color);
+}
+
+.nav-links a::after { /* Efecto de subrayado animado */
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 3px; /* Más grueso */
+    background-color: var(--primary-color);
+    bottom: -8px; /* Más abajo */
+    left: 50%;
+    transform: translateX(-50%);
+    transition: width 0.3s ease-out;
+    border-radius: 2px;
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+.theme-toggle-btn, .menu-toggle-btn {
+    background: none;
+    border: 1px solid var(--border-color-light);
+    font-size: 1.6rem; /* Icono más grande */
+    cursor: pointer;
+    margin-left: 2rem;
+    padding: 0.7rem 0.9rem;
+    border-radius: 50%; /* Botón redondo */
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+    color: var(--text-color-dark);
+    display: flex; /* Para centrar el icono si es necesario */
+    justify-content: center;
+    align-items: center;
+}
+
+.theme-toggle-btn:hover, .menu-toggle-btn:hover {
+    background-color: var(--background-color-alt-light);
+    border-color: var(--primary-color);
+    transform: scale(1.05); /* Ligero zoom al pasar el ratón */
+}
+body.dark-theme .theme-toggle-btn, body.dark-theme .menu-toggle-btn {
+    border-color: var(--border-color-light);
+    color: var(--text-color-dark);
+}
+body.dark-theme .theme-toggle-btn:hover, body.dark-theme .menu-toggle-btn:hover {
+    background-color: var(--background-color-alt-dark);
+}
+
+.menu-toggle-btn {
+    display: none; /* Oculto por defecto, visible en mobile */
+    margin-left: 1rem;
+}
+
+
+/* Secciones Generales */
+.section {
+    padding: var(--section-padding);
+    max-width: 1300px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.section-title {
+    font-size: 3.8rem; /* Título de sección más grande e impactante */
+    margin-bottom: 4rem; /* Más espacio */
+    color: var(--primary-color);
+    position: relative;
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 700;
+}
+
+.section-title::after { /* Subrayado decorativo animado */
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: -20px; /* Más abajo */
+    width: 100px; /* Más largo */
+    height: 6px; /* Más grueso */
+    background-color: var(--primary-color);
+    border-radius: 3px;
+    animation: underlineGrow 1s ease forwards; /* Animación al aparecer */
+}
+
+.bg-light-alt {
+    background-color: var(--background-color-alt-light);
+    transition: background-color 0.5s ease;
+}
+
+body.dark-theme .bg-light-alt {
+    background-color: var(--background-color-alt-dark);
+}
+
+/* Hero Section (Parallax) */
+.hero-section {
+    /* Imagen de fondo de alta resolución de Unsplash */
+    background: url('https://images.unsplash.com/photo-1557804506-66913192070e?q=80&w=2832&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center/cover;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text-color-light); /* Texto claro sobre fondo oscuro */
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.7); /* Sombra más fuerte */
+    background-attachment: fixed;
+    position: relative;
+}
+
+.hero-section::before { /* Overlay oscuro sutil para mejor legibilidad */
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.35); /* Más suave que 0.4 */
+}
+
+.hero-content {
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    animation: fadeInScale 1.5s ease-out forwards; /* Animación más lenta y gradual */
+    max-width: 900px;
+    padding: 0 2rem;
+}
+
+.hero-content h1 {
+    font-size: 5.5rem; /* Título principal aún más grande */
+    margin-bottom: 1.8rem;
+    line-height: 1.1;
+    font-weight: 800;
+    color: white; /* Asegura que el título sea blanco */
+}
+
+.hero-content p {
+    font-size: 1.9rem; /* Párrafo más grande y legible */
+    margin-bottom: 3rem;
+    opacity: 0.95;
+    font-weight: 300; /* Más delgado */
+}
+
+/* Botones */
+.btn-primary, .btn-secondary {
+    padding: 1.3rem 3rem; /* Botones más grandes */
+    border-radius: 50px;
+    font-size: 1.25rem; /* Fuente más grande */
+    font-weight: 600;
+    transition: all 0.3s ease; /* Transición para todas las propiedades */
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer; /* Añadir cursor pointer */
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 8px 25px rgba(0, 123, 255, 0.35); /* Sombra más pronunciada */
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-color-dark);
+    transform: translateY(-7px) scale(1.03); /* Elevación y crecimiento más notables */
+    box-shadow: 0 12px 35px rgba(0, 123, 255, 0.45);
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    box-shadow: none;
+    margin-top: 1rem; /* Espacio para el botón secundario en proyectos */
+}
+
+.btn-secondary:hover {
+    background-color: var(--primary-color);
+    color: white;
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 5px 15px var(--box-shadow-light);
+}
+
+/* Grid de Servicios */
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 3.5rem; /* Más espacio */
+}
+
+.service-item {
+    background-color: var(--background-color-light);
+    padding: 3rem; /* Más padding */
+    border-radius: 15px; /* Más redondeado */
+    box-shadow: 0 10px 30px var(--box-shadow-light); /* Sombra suave pero presente */
+    transition: transform 0.4s ease, box-shadow 0.4s ease, background-color 0.4s ease, border-color 0.4s ease;
+    border: 1px solid var(--border-color-light);
+    text-align: center; /* Centrar contenido de servicio */
+    opacity: 0;
+    transform: translateY(40px);
+}
+
+.service-item:hover {
+    transform: translateY(-12px) scale(1.02); /* Elevación más notable */
+    box-shadow: 0 18px 45px var(--box-shadow-hover-light); /* Sombra al pasar el ratón */
+    border-color: var(--primary-color); /* Borde primario al pasar el ratón */
+}
+
+.service-item .service-icon { /* Usar un ícono de Font Awesome */
+    font-size: 5rem; /* Tamaño del ícono */
+    color: var(--accent-color);
+    margin-bottom: 2rem;
+    transition: transform 0.3s ease;
+    display: inline-block; /* Para que la transformación funcione correctamente */
+}
+.service-item:hover .service-icon {
+    transform: scale(1.1); /* Zoom en el icono */
+    color: var(--primary-color-dark); /* Cambiar color al pasar el ratón */
+}
+
+.service-item h3 {
+    font-size: 2rem;
+    margin-bottom: 1.2rem;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.service-item p {
+    font-size: 1.15rem;
+    color: var(--text-color-secondary);
+}
+
+/* Grid de Proyectos (Portafolio) */
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 4rem; /* Más espacio entre proyectos */
+}
+
+.project-item {
+    background-color: var(--background-color-light);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px var(--box-shadow-light);
+    transition: transform 0.4s ease, box-shadow 0.4s ease, background-color 0.4s ease;
+    border: 1px solid var(--border-color-light);
+    overflow: hidden; /* Para que la imagen no se salga del borde redondeado */
+    text-align: left;
+    opacity: 0;
+    transform: translateY(40px);
+    display: flex;
+    flex-direction: column;
+}
+
+.project-item:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px var(--box-shadow-hover-light);
+}
+
+.project-item img {
+    width: 100%;
+    height: 250px; /* Altura fija para las imágenes del proyecto */
+    object-fit: cover; /* Recorta la imagen para que cubra el área */
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    transition: transform 0.4s ease;
+}
+
+.project-item:hover img {
+    transform: scale(1.08); /* Zoom más pronunciado en la imagen */
+}
+
+.project-info {
+    padding: 2.5rem; /* Más padding para la información */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1; /* Permite que la info ocupe el espacio restante */
+}
+
+.project-info h3 {
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.project-info p {
+    font-size: 1.1rem;
+    color: var(--text-color-secondary);
+    margin-bottom: 1.5rem;
+    flex-grow: 1; /* Hace que el párrafo ocupe el espacio */
+}
+
+/* Sección Acerca de */
+.about-content {
+    display: flex;
+    flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas pequeñas */
+    gap: 3rem;
+    align-items: center;
+    text-align: left;
+}
+
+.about-image {
+    flex: 1; /* Ocupa el espacio disponible */
+    min-width: 300px; /* Ancho mínimo antes de envolver */
+    opacity: 0;
+    transform: translateX(-50px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.about-image.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.about-image img.team-photo {
+    max-width: 100%;
+    height: auto;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px var(--box-shadow-light);
+    border: 1px solid var(--border-color-light);
+}
+
+.about-text {
+    flex: 2; /* Ocupa el doble de espacio que la imagen */
+    min-width: 300px;
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: var(--text-color-dark);
+    opacity: 0;
+    transform: translateX(50px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.about-text.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.about-text p {
+    margin-bottom: 1.5rem;
+    color: var(--text-color-secondary);
+}
+
+/* Formulario de Contacto */
+.contact-form {
+    max-width: 750px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.8rem; /* Más espacio */
+    text-align: left;
+    opacity: 0;
+    transform: translateY(40px);
+    padding: 3rem; /* Más padding */
+    background-color: var(--background-color-light);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px var(--box-shadow-light);
+    border: 1px solid var(--border-color-light);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.7rem;
+    color: var(--text-color-dark);
+}
+
+.contact-form input,
+.contact-form textarea {
+    padding: 1.4rem; /* Más padding */
+    border: 1px solid var(--border-color-light);
+    border-radius: 10px; /* Más redondeado */
+    font-family: var(--body-font);
+    font-size: 1.15rem;
+    background-color: var(--background-color-light);
+    color: var(--text-color-dark);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.contact-form input::placeholder,
+.contact-form textarea::placeholder {
+    color: var(--text-color-secondary);
+    opacity: 0.8;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 5px rgba(74, 144, 226, 0.2); /* Sombra de enfoque más suave */
+}
+
+.contact-form textarea {
+    resize: vertical;
+    min-height: 150px; /* Altura mínima para el área de texto */
+}
+
+.contact-form .btn-primary {
+    align-self: flex-end;
+    margin-top: 1.5rem;
+}
+
+/* Footer */
+.footer {
+    background-color: var(--footer-bg-light);
+    color: var(--footer-text-light);
+    padding: 4rem 2rem; /* Más padding */
+    margin-top: 8rem; /* Más margen superior */
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-family: var(--body-font);
+}
+
+.footer-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    max-width: 1300px;
+    margin: 0 auto 3rem auto; /* Espacio antes del copy */
+    gap: 2.5rem;
+}
+
+.footer-section {
+    flex: 1;
+    min-width: 250px; /* Ancho mínimo para cada columna */
+    margin-bottom: 1.5rem;
+}
+
+.footer-section h3 {
+    font-family: var(--heading-font);
+    font-size: 1.8rem;
+    color: white; /* Siempre blanco para el footer */
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+}
+
+.footer-section p, .footer-section li {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--footer-text-light);
+}
+
+.footer-section ul {
+    padding: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 0.8rem;
+}
+
+.footer-section ul li a {
+    color: var(--footer-link-light);
+    transition: color 0.3s ease;
+}
+
+.footer-section ul li a:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+.social-icons {
+    display: flex;
+    gap: 1.2rem;
+    margin-top: 1rem;
+}
+
+.social-icons a {
+    display: block;
+    width: 40px; /* Iconos más grandes */
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    color: white; /* Color del icono */
+    font-size: 1.3rem; /* Tamaño del ícono */
+}
+
+.social-icons a:hover {
+    background-color: var(--primary-color);
+    transform: translateY(-5px) scale(1.1);
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.footer-bottom p {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+
+/* Animaciones CSS */
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes underlineGrow {
+    from {
+        width: 0;
+    }
+    to {
+        width: 100px; /* Debe coincidir con el width de .section-title::after */
+    }
+}
+
+.reveal {
+    opacity: 0;
+    transform: translateY(60px); /* Más desplazamiento para el efecto */
+    transition: opacity 1s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 1s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Curva de animación más suave */
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Delay para los elementos dentro de los grids */
+.services-grid .service-item:nth-child(1),
+.projects-grid .project-item:nth-child(1) { transition-delay: 0s; }
+.services-grid .service-item:nth-child(2),
+.projects-grid .project-item:nth-child(2) { transition-delay: 0.15s; }
+.services-grid .service-item:nth-child(3),
+.projects-grid .project-item:nth-child(3) { transition-delay: 0.3s; }
+.services-grid .service-item:nth-child(4),
+.projects-grid .project-item:nth-child(4) { transition-delay: 0.45s; }
+
+
+/* Media Queries para Responsividad Avanzada */
+@media (max-width: 1200px) {
+    .navbar {
+        padding: 0 2rem;
+    }
+    .nav-links li {
+        margin-left: 2rem;
+    }
+    .hero-content h1 {
+        font-size: 4.5rem;
+    }
+    .hero-content p {
+        font-size: 1.6rem;
+    }
+    .section-title {
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .navbar {
+        flex-wrap: wrap; /* Permitir que los elementos se envuelvan */
+        padding: 0 1.5rem;
+    }
+    .logo {
+        flex-grow: 1; /* El logo puede crecer para ocupar espacio */
+    }
+    .nav-links {
+        display: none; /* Ocultar nav-links por defecto en mobile */
+        flex-direction: column;
+        width: 100%;
+        margin-top: 1rem;
+        transition: all 0.3s ease-out; /* Animación para el menú */
+        max-height: 0;
+        overflow: hidden;
+    }
+    .nav-links.active {
+        display: flex; /* Mostrar cuando está activo */
+        max-height: 300px; /* Altura máxima para animar */
+    }
+    .nav-links li {
+        margin: 0.7rem 0;
+        text-align: center;
+        width: 100%;
+    }
+    .nav-links a {
+        padding: 0.6rem 0;
+        display: block;
+    }
+    .nav-links a::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    .theme-toggle-btn {
+        margin-left: auto; /* Mover a la derecha */
+    }
+    .menu-toggle-btn {
+        display: flex; /* Mostrar el botón de menú en mobile */
+    }
+    .hero-content h1 {
+        font-size: 3.5rem;
+    }
+    .hero-content p {
+        font-size: 1.4rem;
+    }
+    .section {
+        padding: 6rem 1.5rem;
+    }
+    .section-title {
+        font-size: 2.8rem;
+    }
+    .services-grid, .projects-grid {
+        grid-template-columns: repeat(auto-fit, minmin(280px, 1fr));
+        gap: 2.5rem;
+    }
+    .about-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    .about-image, .about-text {
+        transform: translateY(40px); /* Resetear animaciones para mobile */
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+    .about-image.active, .about-text.active {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .about-image img.team-photo {
+        max-width: 70%; /* Imagen más pequeña en mobile */
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-content h1 {
+        font-size: 2.8rem;
+    }
+    .hero-content p {
+        font-size: 1.1rem;
+    }
+    .btn-primary, .btn-secondary {
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+    }
+    .section-title {
+        font-size: 2.2rem;
+        margin-bottom: 3rem;
+    }
+    .service-item, .project-item {
+        padding: 2rem;
+    }
+    .service-item h3 {
+        font-size: 1.6rem;
+    }
+    .project-info h3 {
+        font-size: 1.8rem;
+    }
+    .contact-form {
+        padding: 2rem;
+    }
+    .contact-form input, .contact-form textarea {
+        padding: 1.1rem;
+        font-size: 1rem;
+    }
+    .footer-content {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .footer-section {
+        min-width: unset;
+        width: 100%;
+        margin-bottom: 2rem;
+    }
+    .social-icons {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo {
+        font-size: 1.8rem;
+    }
+    .hero-content h1 {
+        font-size: 2.2rem;
+    }
+    .hero-content p {
+        font-size: 0.95rem;
+    }
+    .section-title {
+        font-size: 1.8rem;
+    }
+    .section-title::after {
+        width: 60px;
+        height: 4px;
+        bottom: -10px;
+    }
+    .service-item .service-icon {
+        font-size: 4rem;
+    }
+    .service-item h3 {
+        font-size: 1.4rem;
+    }
+    .service-item p {
+        font-size: 1rem;
+    }
+    .project-item img {
+        height: 180px;
+    }
+    .project-info {
+        padding: 1.5rem;
+    }
+    .project-info h3 {
+        font-size: 1.5rem;
+    }
+    .project-info p {
+        font-size: 0.95rem;
+    }
+    .contact-form {
+        padding: 1.5rem;
+    }
+}
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <a href="#" class="logo" aria-label="Digitalia - Volver al inicio">Digitalia</a>
+            <ul class="nav-links" role="menubar">
+                <li role="none"><a href="#inicio" role="menuitem">Inicio</a></li>
+                <li role="none"><a href="#servicios" role="menuitem">Servicios</a></li>
+                <li role="none"><a href="#portafolio" role="menuitem">Portafolio</a></li>
+                <li role="none"><a href="#acerca-de" role="menuitem">Acerca De</a></li>
+                <li role="none"><a href="#contacto" role="menuitem">Contacto</a></li>
+                <li role="none"><button id="theme-toggle" class="theme-toggle-btn" aria-label="Alternar tema claro/oscuro">☀️</button></li>
+            </ul>
+            <button id="menu-toggle" class="menu-toggle-btn" aria-label="Abrir menú de navegación" aria-expanded="false">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <main>
+        <section id="inicio" class="hero-section parallax" role="banner">
+            <div class="hero-content">
+                <h1>Transformamos Ideas en Realidad Digital</h1>
+                <p>Tu visión, nuestra experiencia. Creamos soluciones web impactantes y a medida.</p>
+                <a href="#contacto" class="btn-primary" role="button">Empieza Tu Proyecto</a>
+            </div>
+        </section>
+        <section id="servicios" class="section">
+            <h2 class="section-title reveal">Nuestros Servicios</h2>
+            <div class="services-grid">
+                <div class="service-item reveal">
+                    <i class="fas fa-palette service-icon" aria-hidden="true"></i>
+                    <h3>Diseño Web Estratégico</h3>
+                    <p>Diseñamos experiencias de usuario intuitivas y visualmente cautivadoras que convierten visitantes en clientes.</p>
+                </div>
+                <div class="service-item reveal">
+                    <i class="fas fa-code service-icon" aria-hidden="true"></i>
+                    <h3>Desarrollo Frontend Avanzado</h3>
+                    <p>Convertimos tus diseños en interfaces interactivas y responsivas usando las últimas tecnologías como React y Vue.</p>
+                </div>
+                <div class="service-item reveal">
+                    <i class="fas fa-server service-icon" aria-hidden="true"></i>
+                    <h3>Desarrollo Backend y APIs</h3>
+                    <p>Construimos la infraestructura robusta y segura detrás de tu aplicación, garantizando rendimiento y escalabilidad.</p>
+                </div>
+                <div class="service-item reveal">
+                    <i class="fas fa-chart-line service-icon" aria-hidden="true"></i>
+                    <h3>SEO y Estrategia Digital</h3>
+                    <p>Impulsamos tu visibilidad online y atraemos tráfico cualificado con estrategias de SEO y marketing de contenidos.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="portafolio" class="section bg-light-alt">
+            <h2 class="section-title reveal">Nuestro Portafolio</h2>
+            <div class="projects-grid">
+                <div class="project-item reveal">
+                    <img src="https://images.unsplash.com/photo-1549683935-430c6a2e4854?q=80&w=2832&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Proyecto App de Productividad FocusFlow">
+                    <div class="project-info">
+                        <h3>App de Productividad "FocusFlow"</h3>
+                        <p>Una aplicación móvil intuitiva para la gestión de tareas y el aumento de la concentración, diseñada para mejorar la eficiencia personal y profesional.</p>
+                        <a href="#" class="btn-secondary" role="button">Ver Proyecto</a>
+                    </div>
+                </div>
+                <div class="project-item reveal">
+                    <img src="https://images.unsplash.com/photo-1457369804613-52c619468f7b?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Proyecto Plataforma E-learning EduLearn">
+                    <div class="project-info">
+                        <h3>Plataforma E-learning "EduLearn"</h3>
+                        <p>Desarrollo completo de una plataforma educativa con cursos interactivos, seguimiento de progreso y certificaciones, ideal para instituciones académicas y empresas de capacitación.</p>
+                        <a href="#" class="btn-secondary" role="button">Ver Proyecto</a>
+                    </div>
+                </div>
+                <div class="project-item reveal">
+                    <img src="https://images.unsplash.com/photo-1563986768494-b7f78bbbc081?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Sitio Web Corporativo Global Solutions">
+                    <div class="project-info">
+                        <h3>Sitio Corporativo "Global Solutions"</h3>
+                        <p>Diseño y desarrollo de un sitio web empresarial moderno y optimizado para la captación de leads, destacando la presencia online y la propuesta de valor de la empresa.</p>
+                        <a href="#" class="btn-secondary" role="button">Ver Proyecto</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="acerca-de" class="section">
+            <h2 class="section-title reveal">Acerca de Digitalia</h2>
+            <div class="about-content">
+                <div class="about-image reveal">
+                    <img src="https://images.unsplash.com/photo-1605379399642-870262d3d051?q=80&w=2832&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Equipo de Digitalia trabajando en un proyecto" class="team-photo">
+                </div>
+                <div class="about-text reveal">
+                    <p>En Digitalia, somos un equipo apasionado de desarrolladores, diseñadores y estrategas digitales dedicados a crear soluciones web que no solo lucen bien, sino que también funcionan de manera impecable y generan resultados tangibles.</p>
+                    <p>Nuestra misión es empoderar a empresas y emprendedores con tecnología de vanguardia, transformando ideas complejas en experiencias digitales sencillas y efectivas. Nos enorgullece nuestra atención al detalle, nuestro enfoque centrado en el cliente y nuestra capacidad para adaptarnos a las necesidades cambiantes del mercado.</p>
+                    <p>Desde startups hasta grandes corporaciones, hemos ayudado a nuestros clientes a alcanzar sus objetivos digitales. ¡Déjanos ser tu socio en la innovación!</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="contacto" class="section bg-light-alt">
+            <h2 class="section-title reveal">Hablemos de Tu Próximo Proyecto</h2>
+            <form class="contact-form reveal" action="#" method="POST">
+                <div class="form-group">
+                    <label for="name">Nombre Completo</label>
+                    <input type="text" id="name" name="name" placeholder="Tu Nombre" required aria-label="Tu Nombre Completo">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="tu.email@ejemplo.com" required aria-label="Tu Email">
+                </div>
+                <div class="form-group">
+                    <label for="subject">Asunto</label>
+                    <input type="text" id="subject" name="subject" placeholder="Asunto del mensaje" required aria-label="Asunto del mensaje">
+                </div>
+                <div class="form-group">
+                    <label for="message">Tu Mensaje</label>
+                    <textarea id="message" name="message" placeholder="Describe tu proyecto o consulta..." rows="7" required aria-label="Tu Mensaje"></textarea>
+                </div>
+                <button type="submit" class="btn-primary">Enviar Mensaje</button>
+            </form>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section about-us">
+                <h3>Digitalia</h3>
+                <p>Creamos experiencias digitales que marcan la diferencia. Innovación, calidad y resultados en cada proyecto.</p>
+                <div class="social-icons">
+                    <a href="#" aria-label="Síguenos en Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Síguenos en Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="Síguenos en LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" aria-label="Síguenos en Instagram"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="footer-section quick-links">
+                <h3>Enlaces Rápidos</h3>
+                <ul>
+                    <li><a href="#inicio">Inicio</a></li>
+                    <li><a href="#servicios">Servicios</a></li>
+                    <li><a href="#portafolio">Portafolio</a></li>
+                    <li><a href="#acerca-de">Acerca De</a></li>
+                    <li><a href="#contacto">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer-section contact-info">
+                <h3>Contáctanos</h3>
+                <p><i class="fas fa-map-marker-alt"></i> Calle Falsa 123, Ciudad Digital, País</p>
+                <p><i class="fas fa-phone"></i> +XX XXX XXX XXX</p>
+                <p><i class="fas fa-envelope"></i> info@digitalia.com</p>
+            </div>
+        </div>
+        </main>
+        <footer>
+            <p>&copy; 2025 Digitalia. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Theme Toggle ---
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const currentTheme = localStorage.getItem('theme');
+
+            if (currentTheme) {
+                document.body.classList.add(currentTheme);
+                if (currentTheme === 'dark-theme') {
+                    themeToggleBtn.innerHTML = '🌙';
+                    themeToggleBtn.setAttribute('aria-label', 'Alternar tema claro');
+                } else {
+                    themeToggleBtn.innerHTML = '☀️';
+                    themeToggleBtn.setAttribute('aria-label', 'Alternar tema oscuro');
+                }
+            } else {
+                // Set default to light theme if no preference
+                document.body.classList.add('light-theme');
+                themeToggleBtn.innerHTML = '☀️';
+                themeToggleBtn.setAttribute('aria-label', 'Alternar tema oscuro');
+            }
+
+            themeToggleBtn.addEventListener('click', () => {
+                document.body.classList.toggle('dark-theme');
+                document.body.classList.toggle('light-theme'); // Ensure both classes toggle
+
+                let theme = 'light-theme';
+                if (document.body.classList.contains('dark-theme')) {
+                    theme = 'dark-theme';
+                    themeToggleBtn.innerHTML = '🌙';
+                    themeToggleBtn.setAttribute('aria-label', 'Alternar tema claro');
+                } else {
+                    themeToggleBtn.innerHTML = '☀️';
+                    themeToggleBtn.setAttribute('aria-label', 'Alternar tema oscuro');
+                }
+                localStorage.setItem('theme', theme);
+            });
+
+            // --- Mobile Menu Toggle ---
+            const menuToggleBtn = document.getElementById('menu-toggle');
+            const navLinks = document.querySelector('.nav-links');
+
+            menuToggleBtn.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+                const isExpanded = navLinks.classList.contains('active');
+                menuToggleBtn.setAttribute('aria-expanded', isExpanded);
+                // Change icon based on state
+                if (isExpanded) {
+                    menuToggleBtn.innerHTML = '<i class="fas fa-times"></i>'; // 'X' icon
+                    menuToggleBtn.setAttribute('aria-label', 'Cerrar menú de navegación');
+                } else {
+                    menuToggleBtn.innerHTML = '<i class="fas fa-bars"></i>'; // Hamburger icon
+                    menuToggleBtn.setAttribute('aria-label', 'Abrir menú de navegación');
+                }
+            });
+
+            // Close mobile menu when a link is clicked
+            navLinks.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navLinks.classList.remove('active');
+                    menuToggleBtn.setAttribute('aria-expanded', false);
+                    menuToggleBtn.innerHTML = '<i class="fas fa-bars"></i>';
+                    menuToggleBtn.setAttribute('aria-label', 'Abrir menú de navegación');
+                });
+            });
+
+
+            // --- Scroll Reveal Animation ---
+            const revealElements = document.querySelectorAll('.reveal');
+
+            const observerOptions = {
+                root: null, // viewport
+                rootMargin: '0px',
+                threshold: 0.2 // Element is 20% visible
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        observer.unobserve(entry.target); // Stop observing once visible
+                    }
+                });
+            }, observerOptions);
+
+            revealElements.forEach(el => observer.observe(el));
+
+            // Specific observer for .about-image and .about-text
+            const aboutImage = document.querySelector('.about-image');
+            const aboutText = document.querySelector('.about-text');
+
+            const aboutObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        aboutImage.classList.add('active');
+                        aboutText.classList.add('active');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.3 }); // Adjust threshold as needed
+
+            if (aboutImage && aboutText) {
+                aboutObserver.observe(aboutImage);
+            }
+
+            // Optional: Smooth scrolling for all internal links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // Form submission example (can be expanded with backend logic)
+            const contactForm = document.querySelector('.contact-form');
+            contactForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                alert('Mensaje enviado con éxito. ¡Gracias por contactarnos!');
+                this.reset(); // Clear the form
+            });
+        });
+    </script>
+</body>
+</html>

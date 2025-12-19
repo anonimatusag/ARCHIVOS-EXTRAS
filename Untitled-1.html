@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayvar: Tu Asistente Inteligente</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Variables CSS para una gestión de colores más sencilla */
+        :root {
+            --primary-color: #6a11cb; /* Morado Vibrante */
+            --secondary-color: #2575fc; /* Azul Eléctrico */
+            --accent-color: #ffe082; /* Amarillo Suave */
+            --text-color: #333;
+            --light-text-color: #f4f4f4;
+            --background-light: #f0f2f5;
+            --background-dark: #2c3e50; /* Gris Oscuro */
+            --card-background: #ffffff;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --border-radius: 8px;
+            --transition-speed: 0.3s;
+        }
+
+        /* Reset Básico y Tipografía */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: var(--background-light);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Ocupa el 100% del alto de la ventana */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        h1 { font-size: 3em; }
+        h2 { font-size: 2.5em; }
+        h3 { font-size: 1.8em; }
+
+        p {
+            margin-bottom: 10px;
+        }
+
+        /* --- Header --- */
+        .main-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--light-text-color);
+            padding: 20px 0;
+            box-shadow: 0 4px 15px var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-title {
+            margin: 0;
+            color: var(--light-text-color);
+            letter-spacing: 2px;
+        }
+
+        .main-nav ul {
+            list-style: none;
+            display: flex;
+            gap: 25px; /* Espacio entre los elementos del menú */
+        }
+
+        .nav-link {
+            color: var(--light-text-color);
+            text-decoration: none;
+            font-weight: bold;
+            padding: 5px 10px;
+            transition: color var(--transition-speed), transform var(--transition-speed);
+            position: relative;
+            overflow: hidden; /* Para el efecto de underline */
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--accent-color);
+            transform: translateX(-100%);
+            transition: transform var(--transition-speed) ease-out;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        .nav-link.active::after, .nav-link:hover::after {
+            transform: translateX(0);
+        }
+
+
+        /* --- Botones --- */
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px; /* Bordes super redondeados */
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color var(--transition-speed), transform var(--transition-speed), box-shadow var(--transition-speed);
+        }
+
+        .primary-btn {
+            background: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
+            color: var(--light-text-color);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); /* Invierte el gradiente o cambia ligeramente */
+        }
+
+        /* --- Secciones Principales --- */
+        .main-content {
+            flex-grow: 1; /* Para que ocupe el espacio restante y el footer se vaya al final */
+        }
+
+        .hero-section {
+            /* Usamos una imagen de Unsplash para el fondo, que puedes cambiar */
+            background: url('https://source.unsplash.com/random/1600x900/?technology,futuristic,ai') no-repeat center center/cover;
+            color: var(--light-text-color);
+            text-align: center;
+            padding: 100px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh; /* Altura mínima para el hero */
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before { /* Overlay oscuro para mejor legibilidad del texto */
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        .hero-inner {
+            position: relative;
+            z-index: 2;
+            transform: translateY(20px); /* Efecto inicial de subida */
+            opacity: 0;
+            animation: fadeInSlideUp 1s forwards ease-out;
+            animation-delay: 0.5s;
+        }
+
+        .hero-title {
+            font-size: 4em;
+            margin-bottom: 10px;
+            color: var(--light-text-color);
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.4);
+        }
+
+        .hero-subtitle {
+            font-size: 1.5em;
+            margin-bottom: 30px;
+            color: var(--light-text-color);
+            opacity: 0.9;
+        }
+
+        /* Animación para el hero section */
+        @keyframes fadeInSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Secciones genéricas */
+        section {
+            padding: 80px 0;
+            text-align: center;
+            transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+            position: absolute; /* Para que no ocupe espacio cuando está oculta */
+            width: 100%;
+            left: 0;
+            visibility: hidden; /* Asegura que no sea renderizado */
+            height: 0; /* Colapsa la altura cuando está oculta */
+            overflow: hidden; /* Evita que el contenido se desborde */
+        }
+
+        section.active-section {
+            opacity: 1;
+            transform: translateY(0);
+            position: relative; /* Vuelve a su posición normal */
+            visibility: visible;
+            height: auto; /* Restaura la altura automática */
+            overflow: visible; /* Permite que el contenido se muestre */
+        }
+
+        .section-title {
+            font-size: 3em;
+            margin-bottom: 40px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after { /* Underline animado */
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: -10px;
+            width: 60px;
+            height: 4px;
+            background: var(--primary-color);
+            border-radius: 2px;
+            transform: translateX(-50%) scaleX(0);
+            transition: transform var(--transition-speed) ease-out;
+        }
+
+        /* Efecto al pasar el mouse por el título de la sección */
+        .section-title:hover::after {
+            transform: translateX(-50%) scaleX(1);
+        }
+
+        /* --- Secciones de Funciones (Features) --- */
+        .features-section {
+            background: var(--background-light);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Responsive Grid */
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .feature-card {
+            background: var(--card-background);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px var(--shadow);
+            transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 5px solid transparent; /* Para el efecto de borde */
+        }
+
+        .feature-card::before { /* Efecto de luz al pasar el mouse */
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.01));
+            transform: translateX(-100%);
+            transition: transform 0.6s ease-out;
+            z-index: 0;
+        }
+
+        .feature-card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            border-color: var(--primary-color); /* Borde al pasar el mouse */
+        }
+
+        .feature-card h3 {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1; /* Asegura que el texto esté sobre el efecto */
+        }
+        .feature-card p {
+            color: var(--text-color);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* --- Contacto (Formulario) --- */
+        .contact-section {
+            background: var(--background-dark);
+            color: var(--light-text-color);
+        }
+
+        .contact-section .section-title {
+            color: var(--accent-color);
+        }
+
+        .contact-section .section-title::after {
+            background: var(--accent-color);
+        }
+
+        .contact-form {
+            max-width: 600px;
+            margin: 40px auto 0;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: left;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--light-text-color);
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--light-text-color);
+            font-size: 1em;
+            transition: border-color var(--transition-speed), background-color var(--transition-speed);
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="email"]:focus,
+        .form-group textarea:focus {
+            border-color: var(--accent-color);
+            background-color: rgba(255, 255, 255, 0.1);
+            outline: none;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+        }
+
+        .contact-form .primary-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+
+        /* --- Footer --- */
+        .main-footer {
+            background: var(--background-dark);
+            color: var(--light-text-color);
+            text-align: center;
+            padding: 25px 0;
+            box-shadow: 0 -4px 15px var(--shadow);
+            margin-top: auto; /* Empuja el footer al final de la página */
+        }
+
+        /* --- Media Queries para Responsividad (para que sea "piola" en todos los dispositivos) --- */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .main-nav ul {
+                margin-top: 15px;
+                flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas pequeñas */
+                justify-content: center;
+                gap: 15px;
+            }
+
+            .hero-title {
+                font-size: 2.8em;
+            }
+
+            .hero-subtitle {
+                font-size: 1.2em;
+            }
+
+            h1 { font-size: 2.5em; }
+            h2 { font-size: 2em; }
+            h3 { font-size: 1.5em; }
+
+            .section-title {
+                font-size: 2.2em;
+            }
+
+            section {
+                padding: 60px 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .app-title {
+                font-size: 1.8em;
+            }
+            .hero-title {
+                font-size: 2em;
+            }
+            .hero-subtitle {
+                font-size: 1em;
+            }
+            .btn {
+                padding: 10px 20px;
+                font-size: 1em;
+            }
+            .feature-grid {
+                grid-template-columns: 1fr; /* Una columna en pantallas muy pequeñas */
+            }
+            .section-title {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="container header-content">
+            <h1 class="app-title">Ayvar</h1>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="#home" class="nav-link active" data-section="home">Inicio</a></li>
+                    <li><a href="#features" class="nav-link" data-section="features">Funciones</a></li>
+                    <li><a href="#contact" class="nav-link" data-section="contact">Contacto</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section id="home" class="hero-section active-section">
+            <div class="container hero-inner">
+                <h2 class="hero-title">¡Bienvenido a Ayvar!</h2>
+                <p class="hero-subtitle">Tu asistente personal para el día a día.</p>
+                <button id="mainActionButton" class="btn primary-btn">Empezar Ahora</button>
+            </div>
+        </section>
+
+        <section id="features" class="features-section">
+            <div class="container">
+                <h2 class="section-title">Nuestras Funciones</h2>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h3>Organización</h3>
+                        <p>Gestiona tus tareas y eventos de forma eficiente.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Productividad</h3>
+                        <p>Herramientas para potenciar tu rendimiento diario.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Recordatorios</h3>
+                        <p>Nunca más olvides una cita importante.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Automatización</h3>
+                        <p>Simplifica procesos repetitivos con Ayvar.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Notificaciones</h3>
+                        <p>Mantente al tanto de lo que importa en tiempo real.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Personalización</h3>
+                        <p>Adapta Ayvar a tus necesidades y estilo.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="contact-section">
+            <div class="container">
+                <h2 class="section-title">Contáctanos</h2>
+                <form class="contact-form" id="contactForm">
+                    <div class="form-group">
+                        <label for="name">Nombre:</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Mensaje:</label>
+                        <textarea id="message" name="message" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn primary-btn">Enviar Mensaje</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; 2025 Ayvar. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- JavaScript para la interactividad de Ayvar ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section');
+            const mainActionButton = document.getElementById('mainActionButton');
+            const contactForm = document.getElementById('contactForm');
+
+            // Función para activar una sección y desactivar las demás
+            const activateSection = (sectionId) => {
+                sections.forEach(section => {
+                    if (section.id === sectionId) {
+                        section.classList.add('active-section');
+                    } else {
+                        section.classList.remove('active-section');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    if (link.getAttribute('data-section') === sectionId) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+            };
+
+            // Navegación suave y cambio de sección al hacer clic en el menú
+            navLinks.forEach(link => {
+                link.addEventListener('click', (event) => {
+                    event.preventDefault(); // Evita el comportamiento predeterminado del enlace
+                    const targetSectionId = event.target.getAttribute('data-section');
+
+                    activateSection(targetSectionId);
+
+                    // Desplazamiento suave a la sección
+                    const targetElement = document.getElementById(targetSectionId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - document.querySelector('.main-header').offsetHeight,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            // Acción del botón principal en el Hero Section
+            if (mainActionButton) {
+                mainActionButton.addEventListener('click', () => {
+                    const featuresSection = document.getElementById('features');
+                    if (featuresSection) {
+                        activateSection('features');
+                        window.scrollTo({
+                            top: featuresSection.offsetTop - document.querySelector('.main-header').offsetHeight,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            }
+
+            // Manejo del formulario de contacto (ejemplo básico, sin backend real)
+            if (contactForm) {
+                contactForm.addEventListener('submit', (event) => {
+                    event.preventDefault(); // Evita que el formulario se envíe de forma tradicional
+
+                    const name = document.getElementById('name').value;
+                    const email = document.getElementById('email').value;
+                    const message = document.getElementById('message').value;
+
+                    // Validación simple
+                    if (!name || !email || !message) {
+                        alert('Por favor, completa todos los campos.');
+                        return;
+                    }
+
+                    if (!email.includes('@') || !email.includes('.')) {
+                        alert('Por favor, introduce un email válido.');
+                        return;
+                    }
+
+                    // Aquí iría la lógica para enviar los datos (por ejemplo, a una API o un servicio de correo)
+                    // Por ahora, solo mostramos un mensaje de éxito
+                    alert(`¡Gracias por tu mensaje, ${name}! Te responderemos pronto a ${email}.`);
+
+                    // Limpiar el formulario
+                    contactForm.reset();
+                });
+            }
+
+            // Función para activar la sección correcta al cargar la página si hay un hash en la URL
+            const handleHashChange = () => {
+                const hash = window.location.hash.substring(1); // Obtiene el hash sin el '#'
+                if (hash && document.getElementById(hash)) {
+                    activateSection(hash);
+                } else {
+                    // Si no hay hash válido, activa la sección de inicio por defecto
+                    activateSection('home');
+                }
+            };
+
+            // Llama a la función al cargar la página y cuando cambia el hash
+            window.addEventListener('hashchange', handleHashChange);
+            handleHashChange(); // Llama una vez al inicio para la carga inicial
+        });
+    </script>
+</body>
+</html>

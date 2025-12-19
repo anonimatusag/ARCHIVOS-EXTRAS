@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🚀 Hyper-Futura 2.0 + Asteroid Blaster</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#0a0a0a; --text:#00ffcc; --accent:#0077ff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+
+/* ---------- LAYOUT GENERAL ---------- */
+body{
+  font-family:"Orbitron",sans-serif;background:var(--bg);color:var(--text);
+  overflow:hidden;text-align:center;
+}
+h1{
+  margin-top:60px;font-size:2.8rem;
+  text-shadow:0 0 12px var(--text);
+  animation:glow 1.6s ease-in-out infinite alternate;
+}
+@keyframes glow{
+  from{text-shadow:0 0 8px var(--text);}
+  to  {text-shadow:0 0 26px var(--text),0 0 40px var(--accent);}
+}
+
+/* Capas */
+#scene,#particles-js,#gameCanvas{position:fixed;top:0;left:0;width:100%;height:100%;}
+#particles-js{z-index:-4;}
+#scene       {z-index:-3;}
+#gameCanvas  {z-index:1;pointer-events:none;}   /* lo subimos para que sea visible */
+
+/* Botones y campos */
+.boton{
+  margin:10px;padding:12px 22px;font-size:1rem;border:none;border-radius:12px;cursor:pointer;color:#fff;
+  background:linear-gradient(45deg,var(--accent),var(--text));
+  box-shadow:0 0 12px var(--accent);
+  transition:transform .25s,box-shadow .25s;
+}
+.boton:hover{transform:scale(1.08);box-shadow:0 0 20px var(--text);}
+input{margin:6px;padding:10px;border-radius:8px;border:none;}
+
+#authBox{margin-top:25px;}
+#alerta{min-height:24px;height:24px;}
+.typebox{min-height:34px;margin-top:12px;font-size:1.2rem;}
+
+/* HUD */
+#hud{
+  position:fixed;top:8px;right:14px;font-size:1rem;
+  color:var(--text);text-shadow:0 0 8px var(--text);
+  user-select:none;display:none;
+}
+
+/* Overlay menú modos */
+#gameMenu{
+  position:fixed;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;
+  background:rgba(0,0,0,.88);backdrop-filter:blur(4px);z-index:10;
+}
+#gameMenu.hidden{display:none;}
+#gameMenu h2{margin-bottom:24px;font-size:2.2rem;text-shadow:0 0 14px var(--accent);}
+#gameMenu .modoBtn{width:220px;margin:8px 0;}
+
+/* Ultra-oscuro */
+.ultra body{background:#000;}
+.ultra .boton{box-shadow:0 0 18px #8000ff;background:linear-gradient(45deg,#5100ff,#8000ff);}
+.ultra h1{color:#8000ff;}
+</style>
+</head>
+<body>
+
+<!-- Fondos -->
+<canvas id="scene"></canvas>
+<canvas id="gameCanvas"></canvas>
+<div id="particles-js"></div>
+
+<!-- Encabezado -->
+<h1 id="titulo">🌌 Hyper-Futura 2.0</h1>
+<div id="frase" class="typebox"></div>
+
+<!-- Botones sueltos (se esconden al jugar) -->
+<div id="uiBtns">
+  <button class="boton" onclick="toggleUltra()">Toggle Ultra-Dark</button>
+  <button class="boton" onclick="nuevaFrase()">Nueva frase</button>
+</div>
+
+<!-- Auth -->
+<div id="authBox">
+  <input id="user" placeholder="usuario">
+  <input id="pass" type="password" placeholder="contraseña">
+  <button class="boton" onclick="registrar()">Registro</button>
+  <button class="boton" onclick="login()">Login</button>
+  <button class="boton" onclick="logout()">Logout</button>
+  <div id="alerta"></div>
+</div>
+
+<!-- HUD -->
+<div id="hud">🪐 Score: <span id="score">0</span></div>
+
+<!-- Menú modos -->
+<div id="gameMenu" class="hidden">
+  <h2 id="menuSaludo">¡Bienvenido!</h2>
+  <button class="boton modoBtn" onclick="seleccionarModo('classic')">🌟 Modo Clásico</button>
+  <button class="boton modoBtn" onclick="seleccionarModo('hardcore')">💀 Modo Hardcore</button>
+  <button class="boton modoBtn" onclick="seleccionarModo('zen')">🧘 Modo Zen</button>
+  <button class="boton modoBtn" onclick="seleccionarModo('caos')">⚡ Modo Caos</button>
+</div>
+
+<!-- Sonidos -->
+<audio id="clickSnd" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg" preload="auto"></audio>
+<audio id="laserSnd" src="https://actions.google.com/sounds/v1/alarms/medium_bell_ringing_near.ogg" preload="auto"></audio>
+<audio id="boomSnd"  src="https://actions.google.com/sounds/v1/explosions/explosion.ogg"          preload="auto"></audio>
+
+<!-- Libs -->
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+<script src="https://unpkg.com/three@0.165.0/build/three.min.js"></script>
+
+<script>
+/* ═══ utilidades audio ═══ */
+const clickSnd = document.getElementById('clickSnd');
+const laserSnd = document.getElementById('laserSnd');
+const boomSnd  = document.getElementById('boomSnd');
+const snd = a=>{a.currentTime=0;a.play();};
+
+/* ═══ frases futuristas ═══ */
+const frases=[
+  "El mañana pertenece a los que hackean el presente.",
+  "El código es el nuevo oxígeno.",
+  "Los límites son simplemente bugs sin reportar.",
+  "Bienvenido al multiverso cuántico.",
+  "Carga completada: 101% de imaginación."
+];
+function type(el,txt,vel=60){el.textContent='';let i=0;(function l(){if(i<txt.length){el.textContent+=txt[i++];setTimeout(l,vel);}})();}
+function nuevaFrase(){snd(laserSnd);type(frase,frases[Math.random()*frases.length|0],40);}
+
+/* ═══ ultra oscuro ═══ */
+function toggleUltra(){snd(clickSnd);document.documentElement.classList.toggle('ultra');}
+
+/* ═══ auth (localStorage) ═══ */
+const alertaDiv=document.getElementById('alerta');
+function getUsers(){return JSON.parse(localStorage.getItem('users')||'{}');}
+function setUsers(u){localStorage.setItem('users',JSON.stringify(u));}
+function registrar(){
+  snd(clickSnd);
+  const u=user.value.trim(),p=pass.value;
+  if(!u||!p)return alerta("❌ Completa usuario y contraseña");
+  const us=getUsers();if(us[u])return alerta("❌ Usuario ya existe");
+  us[u]=btoa(p);setUsers(us);alerta("✅ Registrado, inicia sesión",true);
+}
+function login(){
+  snd(clickSnd);
+  const u=user.value.trim(),p=pass.value,us=getUsers();
+  if(us[u]&&us[u]===btoa(p)){localStorage.setItem('logged',u);alerta(`🚀 Bienvenido, ${u}`,true);mostrarMenu(u);}
+  else alerta("❌ Credenciales incorrectas");
+}
+function logout(){
+  snd(clickSnd);localStorage.removeItem('logged');
+  alerta("Sesión cerrada",true);ocultarMenu();terminarPartida();restaurarUI();
+}
+function alerta(msg,ok=false){alertaDiv.style.color=ok?"#00ffcc":"#ff3355";alertaDiv.textContent=msg;}
+
+/* ═══ menú de modos ═══ */
+const gameMenu  = document.getElementById('gameMenu');
+const menuSal   = document.getElementById('menuSaludo');
+const hud       = document.getElementById('hud');
+const scoreSpan = document.getElementById('score');
+const uiBtns    = document.getElementById('uiBtns');
+const titleEl   = document.getElementById('titulo');
+const fraseEl   = document.getElementById('frase');
+
+function mostrarMenu(nombre){
+  menuSal.textContent=`🚀 ¡Hola, ${nombre}! Seleccioná tu modo`;
+  gameMenu.classList.remove('hidden'); authBox.style.display='none'; hud.style.display='none';
+}
+function ocultarMenu(){gameMenu.classList.add('hidden');authBox.style.display='';}
+function ocultarUI(){
+  titleEl.style.display='none';fraseEl.style.display='none';uiBtns.style.display='none';
+}
+function restaurarUI(){
+  titleEl.style.display='';fraseEl.style.display='';uiBtns.style.display='';
+}
+
+/* ═══ THREE.js cubo holográfico ═══ */
+let scene,camera,renderer,cube;
+function init3D(){
+  scene=new THREE.Scene();
+  camera=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,0.1,1000);
+  renderer=new THREE.WebGLRenderer({canvas:document.getElementById('scene'),alpha:true});
+  renderer.setSize(innerWidth,innerHeight);
+  cube=new THREE.Mesh(new THREE.BoxGeometry(),new THREE.MeshBasicMaterial({color:0x00ffcc,wireframe:true}));
+  scene.add(cube);camera.position.z=3;
+  (function anim(){requestAnimationFrame(anim);cube.rotation.x+=.005;cube.rotation.y+=.008;renderer.render(scene,camera);})();
+}
+onresize=()=>renderer.setSize(innerWidth,innerHeight);
+
+/* ═══ particles.js ═══ */
+particlesJS("particles-js",{particles:{number:{value:160,density:{enable:true,value_area:800}},color:{value:"#00ffcc"},opacity:{value:.4,random:true},size:{value:3,random:true},move:{enable:true,speed:1}}});
+
+/* ═══ juego: Asteroid Blaster ═══ */
+const cvs=document.getElementById('gameCanvas'),ctx=cvs.getContext('2d');
+let W=innerWidth,H=innerHeight; cvs.width=W;cvs.height=H;
+
+const player={x:W/2,y:H-80,size:40,speed:7};
+const bullets=[],asteroids=[];
+let score=0,playing=false,modo='classic',spawnTimer;
+
+const modos={
+  classic :{spawn:1100,velMin:1 ,velMax:2 },
+  hardcore:{spawn:550 ,velMin:2 ,velMax:4 },
+  zen     :{spawn:1600,velMin:.7,velMax:1.4},
+  caos    :{spawn:300 ,velMin:1 ,velMax:6 }
+};
+
+function seleccionarModo(m){
+  modo=m;score=0;scoreSpan.textContent=0;bullets.length=0;asteroids.length=0;
+  ocultarUI();gameMenu.classList.add('hidden');hud.style.display='';playing=true;
+  clearInterval(spawnTimer);spawnTimer=setInterval(spawnAsteroid,modos[m].spawn);
+}
+function terminarPartida(){playing=false;clearInterval(spawnTimer);hud.style.display='none';}
+
+const keys={};
+onkeydown=e=>{keys[e.code]=true;if(playing&&e.code==="Space") disparar();};
+onkeyup  =e=>keys[e.code]=false;
+
+function disparar(){snd(laserSnd);bullets.push({x:player.x,y:player.y-20});}
+
+function spawnAsteroid(){
+  const s=20+Math.random()*30,x=Math.random()*W,v=modos[modo];
+  asteroids.push({x,y:-s,size:s,speed:v.velMin+Math.random()*(v.velMax-v.velMin)});
+}
+
+function loop(){requestAnimationFrame(loop);if(!playing)return;update();render();}
+function update(){
+  if(keys.ArrowLeft)  player.x-=player.speed;
+  if(keys.ArrowRight) player.x+=player.speed;
+  player.x=Math.max(player.size/2,Math.min(W-player.size/2,player.x));
+
+  for(let i=bullets.length-1;i>=0;i--){bullets[i].y-=12;if(bullets[i].y<-10)bullets.splice(i,1);}
+  for(let i=asteroids.length-1;i>=0;i--){const a=asteroids[i];a.y+=a.speed;if(a.y>H+a.size)asteroids.splice(i,1);}
+
+  for(let i=asteroids.length-1;i>=0;i--){
+    const a=asteroids[i];
+    for(let j=bullets.length-1;j>=0;j--){
+      const b=bullets[j];
+      if(Math.hypot(a.x-b.x,a.y-b.y)<a.size){
+        snd(boomSnd);asteroids.splice(i,1);bullets.splice(j,1);
+        score+=10;scoreSpan.textContent=score;break;
+      }
+    }
+  }
+}
+function render(){
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle="#00ffcc";
+  ctx.beginPath();
+  ctx.moveTo(player.x,player.y-player.size/2);
+  ctx.lineTo(player.x-player.size/2,player.y+player.size/2);
+  ctx.lineTo(player.x+player.size/2,player.y+player.size/2);
+  ctx.closePath();ctx.fill();
+
+  ctx.fillStyle="#ff77ff";
+  bullets.forEach(b=>ctx.fillRect(b.x-2,b.y-10,4,10));
+
+  ctx.strokeStyle="#ffffff";ctx.lineWidth=2;
+  asteroids.forEach(a=>{ctx.beginPath();ctx.arc(a.x,a.y,a.size,0,Math.PI*2);ctx.stroke();});
+}
+
+onresize=()=>{W=innerWidth;H=innerHeight;cvs.width=W;cvs.height=H;player.y=H-80;};
+
+/* ═══ init ═══ */
+document.addEventListener('DOMContentLoaded',()=>{
+  type(frase,"El mañana pertenece a los que hackean el presente.",40);
+  init3D();loop();
+  const u=localStorage.getItem('logged');
+  if(u){alerta(`👾 Sesión activa: ${u}`,true);mostrarMenu(u);}
+});
+</script>
+</body>
+</html>

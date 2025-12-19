@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🚀 Hyper-Futura Web + Mini-Game</title>
+
+<!-- Fuente futurista -->
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --bg:#0a0a0a;
+    --text:#00ffcc;
+    --accent:#0077ff;
+}
+*{box-sizing:border-box}
+body{
+    margin:0;
+    font-family:"Orbitron",sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    overflow:hidden;
+    text-align:center;
+    transition:background .6s cubic-bezier(.4,0,.2,1);
+}
+h1{
+    margin-top:60px;
+    font-size:2.8rem;
+    text-shadow:0 0 12px var(--text);
+    animation:glow 1.6s ease-in-out infinite alternate;
+}
+@keyframes glow{
+    from{text-shadow:0 0 8px var(--text);}
+    to  {text-shadow:0 0 26px var(--text),0 0 40px var(--accent);}
+}
+
+/* Lienzos y capas */
+#scene, #particles-js, #gameCanvas{
+    position:fixed;
+    top:0;left:0;
+    width:100%;height:100%;
+}
+#scene        {z-index:-3;}
+#particles-js {z-index:-4;}
+#gameCanvas   {z-index:-2;pointer-events:none;} /* el juego no tapa los botones */
+
+/* Botones y cajas */
+.boton{
+    margin:10px;padding:12px 22px;
+    font-size:1rem;border:none;border-radius:12px;
+    cursor:pointer;color:#fff;
+    background:linear-gradient(45deg,var(--accent),var(--text));
+    box-shadow:0 0 12px var(--accent);
+    transition:transform .25s,box-shadow .25s;
+}
+.boton:hover{transform:scale(1.08);box-shadow:0 0 20px var(--text);}
+input{margin:6px;padding:10px;border-radius:8px;border:none;}
+#authBox{margin-top:25px;}
+#alerta{min-height:24px;}
+.typebox{min-height:34px;margin-top:12px;font-size:1.2rem;}
+
+/* HUD del juego */
+#hud{
+    position:fixed;top:8px;right:14px;
+    font-size:1rem;color:var(--text);
+    text-shadow:0 0 8px var(--text);
+    user-select:none;
+}
+
+/* ULTRA-oscuro */
+.ultra body{background:#000;}
+.ultra .boton{box-shadow:0 0 18px #8000ff;background:linear-gradient(45deg,#5100ff,#8000ff);}
+.ultra h1{color:#8000ff;}
+</style>
+</head>
+<body>
+
+<!-- Capas de fondo -->
+<canvas id="scene"></canvas>         <!-- cubo holográfico -->
+<canvas id="gameCanvas"></canvas>    <!-- mini-game -->
+<div   id="particles-js"></div>      <!-- partículas -->
+
+<h1 id="titulo"></h1>
+<div id="frase" class="typebox"></div>
+
+<!-- Botones UX -->
+<button class="boton" onclick="toggleUltra()">Toggle Ultra-Dark</button>
+<button class="boton" onclick="nuevaFrase()">Nueva frase</button>
+
+<!-- Auth -->
+<div id="authBox">
+    <input id="user" placeholder="usuario">
+    <input id="pass" type="password" placeholder="contraseña">
+    <button class="boton" onclick="registrar()">Registro</button>
+    <button class="boton" onclick="login()">Login</button>
+    <button class="boton" onclick="logout()">Logout</button>
+    <div id="alerta"></div>
+</div>
+
+<!-- HUD del juego -->
+<div id="hud">🪐 Score: <span id="score">0</span></div>
+
+<!-- Sonidos -->
+<audio id="clickSnd"  src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"    preload="auto"></audio>
+<audio id="laserSnd"  src="https://actions.google.com/sounds/v1/alarms/medium_bell_ringing_near.ogg" preload="auto"></audio>
+<audio id="boomSnd"   src="https://actions.google.com/sounds/v1/explosions/explosion.ogg"            preload="auto"></audio>
+
+<!-- Librerías externas -->
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+<script src="https://unpkg.com/three@0.165.0/build/three.min.js"></script>
+
+<script>
+/* ══════════════ UTILIDADES DE SONIDO ═════════════ */
+const clickSnd=document.getElementById('clickSnd');
+const laserSnd=document.getElementById('laserSnd');
+const boomSnd =document.getElementById('boomSnd');
+function snd(el){ el.currentTime=0; el.play(); }
+
+/* ══════════════ FRASES FUTURISTAS ════════════════ */
+const frases=[
+  "El mañana pertenece a los que hackean el presente.",
+  "El código es el nuevo oxígeno.",
+  "Los límites son simplemente bugs sin reportar.",
+  "Bienvenido al multiverso cuántico.",
+  "Carga completada: 101% de imaginación."
+];
+function typeWriter(el,txt,vel=60){
+  el.textContent='';
+  let i=0; (function loop(){ if(i<txt.length){el.textContent+=txt[i++]; setTimeout(loop,vel);} })();
+}
+function nuevaFrase(){
+  snd(laserSnd);
+  const r=frases[Math.floor(Math.random()*frases.length)];
+  typeWriter(document.getElementById('frase'),r,40);
+}
+
+/* ══════════════ MODO ULTRA OSCURO ═══════════════ */
+function toggleUltra(){ snd(clickSnd); document.documentElement.classList.toggle('ultra'); }
+
+/* ══════ AUTH localStorage (sencillo para demo) ═══ */
+function getUsers(){ return JSON.parse(localStorage.getItem('users')||'{}'); }
+function setUsers(u){ localStorage.setItem('users',JSON.stringify(u)); }
+function registrar(){
+  snd(clickSnd);
+  const u=user.value, p=pass.value;
+  if(!u||!p)          return alerta("❌ Rellena usuario y contraseña");
+  const users=getUsers();
+  if(users[u])        return alerta("❌ Usuario ya existe");
+  users[u]=btoa(p);   setUsers(users);
+  alerta("✅ Registrado, ahora inicia sesión",true);
+}
+function login(){
+  snd(clickSnd);
+  const u=user.value, p=pass.value, users=getUsers();
+  if(users[u]&&users[u]===btoa(p)){
+      localStorage.setItem('logged',u);
+      alerta(`🚀 Bienvenido, ${u}`,true);
+  }else alerta("❌ Credenciales incorrectas");
+}
+function logout(){ snd(clickSnd); localStorage.removeItem('logged'); alerta("Sesión cerrada",true); }
+function alerta(msg,ok=false){ alertaDiv.style.color=ok?"#00ffcc":"#ff3355"; alertaDiv.textContent=msg; }
+
+/* ══════════════ THREE.JS CUBO HOLOGRÁFICO ═══════ */
+let scene,camera,renderer,cube;
+function init3D(){
+  const canvas=document.getElementById('scene');
+  scene = new THREE.Scene();
+  camera= new THREE.PerspectiveCamera(75,innerWidth/innerHeight,0.1,1000);
+  renderer=new THREE.WebGLRenderer({canvas,alpha:true});
+  renderer.setSize(innerWidth,innerHeight);
+  const geo=new THREE.BoxGeometry();
+  const mat=new THREE.MeshBasicMaterial({color:0x00ffcc,wireframe:true});
+  cube=new THREE.Mesh(geo,mat); scene.add(cube); camera.position.z=3;
+  animate();
+}
+function animate(){ requestAnimationFrame(animate);
+  cube.rotation.x+=0.005; cube.rotation.y+=0.008;
+  renderer.render(scene,camera);
+}
+addEventListener('resize',()=>renderer.setSize(innerWidth,innerHeight));
+
+/* giroscopio / ratón */
+function handleOrientation(e){ if(!cube)return; cube.rotation.x=e.beta*Math.PI/360; cube.rotation.y=e.gamma*Math.PI/180; }
+function handleMouse(e){ if(!cube)return;
+  const x=e.clientX/innerWidth-.5, y=e.clientY/innerHeight-.5;
+  cube.rotation.y=x*Math.PI; cube.rotation.x=y*Math.PI;
+}
+if(DeviceOrientationEvent) addEventListener('deviceorientation',handleOrientation);
+else                       addEventListener('mousemove',handleMouse);
+
+/* ══════════════ PARTICULAS DE FONDO ═════════════ */
+particlesJS("particles-js",{
+  particles:{number:{value:160,density:{enable:true,value_area:800}},
+  color:{value:"#00ffcc"},opacity:{value:0.4,random:true},
+  size:{value:3,random:true},move:{enable:true,speed:1}}
+});
+
+/* ══════════════ MINI-GAME “ASTEROID BLASTER” ════ */
+const gameCanvas = document.getElementById('gameCanvas'),
+      ctx         = gameCanvas.getContext('2d');
+let   W=innerWidth, H=innerHeight;
+gameCanvas.width=W; gameCanvas.height=H;
+
+const player = {x:W/2, y:H-80, size:40, speed:7};
+const bullets=[], asteroids=[];
+let score=0;
+const keys={};
+
+function resizeGame(){ W=innerWidth; H=innerHeight;
+  gameCanvas.width=W; gameCanvas.height=H;
+  player.y=H-80;
+}
+addEventListener('resize',resizeGame);
+
+/* Controles */
+addEventListener('keydown',e=>{
+  keys[e.code]=true;
+  if(e.code==="Space") shoot();
+});
+addEventListener('keyup',e=>keys[e.code]=false);
+
+function shoot(){
+  snd(laserSnd);
+  bullets.push({x:player.x,y:player.y-20,size:6});
+}
+
+function spawnAsteroid(){
+  const size=20+Math.random()*30,
+        x=Math.random()*W;
+  asteroids.push({x,y:-size,size,speed:1+Math.random()*2});
+}
+setInterval(spawnAsteroid,1000);
+
+/* Loop principal */
+function gameLoop(){
+  requestAnimationFrame(gameLoop);
+  updateGame(); renderGame();
+}
+function updateGame(){
+  /* mover nave */
+  if(keys['ArrowLeft'])  player.x-=player.speed;
+  if(keys['ArrowRight']) player.x+=player.speed;
+  player.x=Math.max(player.size/2,Math.min(W-player.size/2,player.x));
+
+  /* balas */
+  for(let i=bullets.length-1;i>=0;i--){
+    bullets[i].y-=10;
+    if(bullets[i].y< -10) bullets.splice(i,1);
+  }
+  /* asteroides */
+  for(let i=asteroids.length-1;i>=0;i--){
+    const a=asteroids[i];
+    a.y+=a.speed;
+    if(a.y>H+a.size) asteroids.splice(i,1);
+  }
+  /* colisiones */
+  for(let i=asteroids.length-1;i>=0;i--){
+    const a=asteroids[i];
+    for(let j=bullets.length-1;j>=0;j--){
+      const b=bullets[j],
+            dx=a.x-b.x, dy=a.y-b.y,
+            dist=Math.hypot(dx,dy);
+      if(dist<a.size){
+        snd(boomSnd);
+        asteroids.splice(i,1);
+        bullets.splice(j,1);
+        score+=10; document.getElementById('score').textContent=score;
+        break;
+      }
+    }
+  }
+}
+function renderGame(){
+  ctx.clearRect(0,0,W,H);
+
+  /* Nave: triángulo */
+  ctx.fillStyle="#00ffcc";
+  ctx.beginPath();
+  ctx.moveTo(player.x,player.y-player.size/2);
+  ctx.lineTo(player.x-player.size/2,player.y+player.size/2);
+  ctx.lineTo(player.x+player.size/2,player.y+player.size/2);
+  ctx.closePath(); ctx.fill();
+
+  /* Balas */
+  ctx.fillStyle="#ff77ff";
+  bullets.forEach(b=> ctx.fillRect(b.x-2,b.y-10,4,10));
+
+  /* Asteroides */
+  ctx.strokeStyle="#ffffff"; ctx.lineWidth=2;
+  asteroids.forEach(a=>{
+    ctx.beginPath();
+    ctx.arc(a.x,a.y,a.size,0,Math.PI*2); ctx.stroke();
+  });
+}
+
+/* ══════════════ INIT GENERAL ═══════════════════ */
+const alertaDiv=document.getElementById('alerta');
+addEventListener('DOMContentLoaded',()=>{
+  typeWriter(titulo,"🌌 Hyper-Futura 2.0",70);
+  nuevaFrase(); init3D(); gameLoop();
+  const u=localStorage.getItem('logged');
+  if(u) alerta(`👾 Sesión activa: ${u}`,true);
+});
+</script>
+</body>
+</html>
